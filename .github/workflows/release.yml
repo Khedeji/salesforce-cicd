@@ -69,10 +69,28 @@ jobs:
         with:
           sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_SANDBOX }}
 
+      - name: Install Packaging Plugin (needed per-job)
+        run: |
+          sf plugins install @salesforce/plugin-packaging || true
+          sf plugins --core
+
+      - name: Debug show package id
+        run: |
+          echo "build-package output pkg_version = '${{ needs.build-package.outputs.pkg_version }}'"
+          if [ -z "${{ needs.build-package.outputs.pkg_version }}" ]; then
+            echo "ERROR: pkg_version is empty — aborting"
+            exit 1
+          fi
+
       - name: Validate in Sandbox (check-only)
         run: |
-          echo "Validating package_version: ${{ needs.build-package.outputs.pkg_version }}"
-          sfdx force:package:install --package "${{ needs.build-package.outputs.pkg_version }}" -u devhub --check-only --wait 20 --publishwait 10 --noprompt
+          sf package version install \
+            --package "${{ needs.build-package.outputs.pkg_version }}" \
+            --target-org devhub \
+            --check-only \
+            --no-prompt \
+            --wait 20 \
+            --publish-wait 10
 
   deploy-sandbox:
     name: Deploy Package to Sandbox
@@ -88,7 +106,24 @@ jobs:
         with:
           sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_SANDBOX }}
 
+      - name: Install Packaging Plugin (needed per-job)
+        run: |
+          sf plugins install @salesforce/plugin-packaging || true
+          sf plugins --core
+
+      - name: Debug show package id before install
+        run: |
+          echo "build-package output pkg_version = '${{ needs.build-package.outputs.pkg_version }}'"
+          if [ -z "${{ needs.build-package.outputs.pkg_version }}" ]; then
+            echo "ERROR: pkg_version is empty — aborting deploy"
+            exit 1
+          fi
+
       - name: Install Package into Sandbox
         run: |
-          echo "Installing package_version: ${{ needs.build-package.outputs.pkg_version }}"
-          sfdx force:package:install --package "${{ needs.build-package.outputs.pkg_version }}" -u devhub --wait 20 --publishwait 10 --noprompt
+          sf package version install \
+            --package "${{ needs.build-package.outputs.pkg_version }}" \
+            --target-org devhub \
+            --no-prompt \
+            --wait 20 \
+            --publish-wait 10
