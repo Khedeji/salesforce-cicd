@@ -1,4 +1,4 @@
-name: CI/CD (Prod DevHub → Sandbox Deploy)
+name: CI/CD - DevHub (PROD) → Sandbox
 
 on:
   push:
@@ -7,32 +7,43 @@ on:
 
 jobs:
   build-package:
-  name: Create Package Version (DevHub = PROD)
-  runs-on: ubuntu-latest
-  steps:
-    - name: Checkout Code
-      uses: actions/checkout@v4
+    name: Create Package Version (DevHub = PROD)
+    runs-on: ubuntu-latest
 
-    - name: Setup SFDX and Authenticate DevHub (PROD)
-      uses: sfdx-actions/setup-sfdx@v1
-      with:
-        sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_PROD }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-    - name: Install Packaging Plugin
-      run: |
-        sf plugins install @salesforce/plugin-packaging
+      - name: Authenticate DevHub (PROD)
+        uses: sfdx-actions/setup-sfdx@v1
+        with:
+          sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_PROD }}
 
-    - name: Create Package Version
-      id: pkg
-      run: |
-        sf package version create --package MyApp --installation-key "${{ secrets.PACKAGE_KEY }}" --path force-app --wait 20 --json > pkg.json
-        cat pkg.json
-        echo "pkg_version=$(jq -r '.result.SubscriberPackageVersionId' pkg.json)" >> $GITHUB_OUTPUT
+      - name: Install Packaging Plugin (IMPORTANT FIX)
+        run: |
+          sf plugins install @salesforce/plugin-packaging
+
+      - name: Create Package Version
+        id: pkg
+        run: |
+          sf package version create \
+            --package MyApp \
+            --path force-app \
+            --installation-key "${{ secrets.PACKAGE_KEY }}" \
+            --wait 20 \
+            --json > pkg.json
+
+          echo "======= PACKAGE VERSION JSON ======="
+          cat pkg.json
+          echo "===================================="
+
+          echo "pkg_version=$(jq -r '.result.SubscriberPackageVersionId' pkg.json)" >> $GITHUB_OUTPUT
 
   validate-sandbox:
-    name: Validate Package in Sandbox
+    name: Validate Package in Sandbox (Check-Only)
     runs-on: ubuntu-latest
     needs: build-package
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -44,12 +55,19 @@ jobs:
 
       - name: Validate in Sandbox (check-only)
         run: |
-          sf package install --package ${{ needs.build-package.outputs.pkg_version }} --target-org devhub --check-only --wait 20 --publish-wait 10 --no-prompt
+          sf package install \
+            --package ${{ needs.build-package.outputs.pkg_version }} \
+            --target-org devhub \
+            --check-only \
+            --wait 20 \
+            --publish-wait 10 \
+            --no-prompt
 
   deploy-sandbox:
     name: Deploy Package to Sandbox
     runs-on: ubuntu-latest
     needs: validate-sandbox
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -61,4 +79,9 @@ jobs:
 
       - name: Install Package into Sandbox
         run: |
-          sf package install --package ${{ needs.build-package.outputs.pkg_version }} --target-org devhub --wait 20 --publish-wait 10 --no-prompt
+          sf package install \
+            --package ${{ needs.build-package.outputs.pkg_version }} \
+            --target-org devhub \
+            --wait 20 \
+            --publish-wait 10 \
+            --no-prompt
