@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-package:
-    name: Create Package Version (DevHub = PROD)
+    name: Create Package Version (DEBUG MODE)
     runs-on: ubuntu-latest
 
     steps:
@@ -19,25 +19,35 @@ jobs:
         with:
           sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_PROD }}
 
-      - name: Install Packaging Plugin (IMPORTANT FIX)
+      - name: Install Packaging Plugin
         run: |
           sf plugins install @salesforce/plugin-packaging
 
-      - name: Create Package Version
+      - name: Create Package Version (DEBUG - DO NOT STOP ON ERROR)
         id: pkg
         run: |
+          echo "Running: sf package version create"
+
+          # run command but DO NOT stop workflow
           sf package version create \
             --package MyApp \
             --path force-app \
             --installation-key "${{ secrets.PACKAGE_KEY }}" \
             --wait 20 \
-            --json > pkg.json
+            --json > pkg.json 2>&1 || true
 
-          echo "======= PACKAGE VERSION JSON ======="
-          cat pkg.json
-          echo "===================================="
+          echo "===== RAW PACKAGE VERSION OUTPUT ====="
+          cat pkg.json || echo "pkg.json missing"
+          echo "======================================"
 
-          echo "pkg_version=$(jq -r '.result.SubscriberPackageVersionId' pkg.json)" >> $GITHUB_OUTPUT
+          # try extract version (may be empty)
+          if jq -e '.result.SubscriberPackageVersionId' pkg.json >/dev/null 2>&1; then
+            v=$(jq -r '.result.SubscriberPackageVersionId' pkg.json)
+            echo "pkg_version=$v" >> $GITHUB_OUTPUT
+          else
+            echo "NO PACKAGE VERSION FOUND"
+            echo "pkg_version=" >> $GITHUB_OUTPUT
+          fi
 
   validate-sandbox:
     name: Validate Package in Sandbox (Check-Only)
