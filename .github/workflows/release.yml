@@ -84,13 +84,7 @@ jobs:
 
       - name: Validate in Sandbox (check-only)
         run: |
-          sf package version install \
-            --package "${{ needs.build-package.outputs.pkg_version }}" \
-            --target-org devhub \
-            --check-only \
-            --no-prompt \
-            --wait 20 \
-            --publish-wait 10
+          sf package version install  --package "${{ needs.build-package.outputs.pkg_version }}" --target-org devhub --check-only  --no-prompt --wait 20 --publish-wait 10
 
   deploy-sandbox:
     name: Deploy Package to Sandbox
@@ -121,9 +115,4 @@ jobs:
 
       - name: Install Package into Sandbox
         run: |
-          sf package version install \
-            --package "${{ needs.build-package.outputs.pkg_version }}" \
-            --target-org devhub \
-            --no-prompt \
-            --wait 20 \
-            --publish-wait 10
+          sf package version install  --package "${{ needs.build-package.outputs.pkg_version }}" --target-org devhub   --no-prompt --wait 20 --publish-wait 10
