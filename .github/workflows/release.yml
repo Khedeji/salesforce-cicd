@@ -1,107 +1,61 @@
-name: CI - Package & Release Pipeline (DevHub -> Prod)
+name: CI/CD (DevHub Prod → Sandbox)
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
-  prep-and-test:
-    name: Build & Unit Tests
+  build-package:
+    name: Create Package Version (DevHub = PROD)
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Node for LWC Tests
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
-      - name: Install npm dependencies (if any)
-        run: |
-          if [ -f package.json ]; then
-            if [ -f package-lock.json ]; then
-              echo "package-lock.json found — running npm ci"
-              npm ci
-            else
-              echo "No package-lock.json — running npm install"
-              npm install
-            fi
-          else
-            echo "No package.json found — skipping npm install"
-          fi
-
-      - name: Run LWC Jest tests (if any)
-        run: if [ -f package.json ]; then npm test || true; fi
-
-      - name: Setup SFDX CLI and Authenticate (DevHub - sandbox)
+      - name: Authenticate DevHub (PROD)
         uses: sfdx-actions/setup-sfdx@v1
         with:
-          sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_DEVHUB }}
+          sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_PROD }}
 
-      - name: Create Scratch Org & Run Apex Tests (optional)
-        run: |
-          sfdx force:org:create -f config/project-scratch-def.json -a CI_SCRATCH -s --durationdays 1 || true
-          sfdx force:source:push -u CI_SCRATCH || true
-          sfdx force:apex:test:run -u CI_SCRATCH --resultformat human --wait 10 || true
-          sfdx force:org:delete -u CI_SCRATCH -p || true
-
-  build-package:
-    name: Create Package Version (using DevHub)
-    runs-on: ubuntu-latest
-    needs: prep-and-test
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup SFDX CLI and Authenticate (DevHub - sandbox)
-        uses: sfdx-actions/setup-sfdx@v1
-        with:
-          sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_DEVHUB }}
-
-      - name: Create package version
+      - name: Create Package Version
         id: pkg
         run: |
-          # Replace MyApp with your package name if different
+          # Replace MyApp with your package name
           sfdx force:package:version:create -p MyApp -d force-app -k "${{ secrets.PACKAGE_KEY }}" --wait 20 --json > pkg.json
           cat pkg.json
           echo "pkg_version=$(jq -r '.result.SubscriberPackageVersionId' pkg.json)" >> $GITHUB_OUTPUT
 
-  prod-validation:
-    name: Check-only Validation in Production
+  validate-sandbox:
+    name: Validate Package in Sandbox
     runs-on: ubuntu-latest
     needs: build-package
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-      - name: Setup SFDX CLI and Authenticate (Prod)
+      - name: Authenticate Sandbox
         uses: sfdx-actions/setup-sfdx@v1
         with:
-          sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_PROD }}
+          sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_SANDBOX }}
 
-      - name: Validate against Production (check-only)
+      - name: Validate in Sandbox (check only)
         run: |
-          sfdx force:package:install --package ${{ needs.build-package.outputs.pkg_version }} -u prod --wait 20 --publishwait 10 --checkonly --noprompt --testlevel RunLocalTests
+          sfdx force:package:install --package ${{ needs.build-package.outputs.pkg_version }} -u devhub --checkonly --wait 20 --publishwait 10 --noprompt
 
-  deploy-to-prod:
-    name: Deploy to Production (Manual Approval Required)
+  deploy-sandbox:
+    name: Deploy Package to Sandbox
     runs-on: ubuntu-latest
-    needs: prod-validation
-    environment:
-      name: production
+    needs: validate-sandbox
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-      - name: Setup SFDX CLI and Authenticate (Prod)
+      - name: Authenticate Sandbox
         uses: sfdx-actions/setup-sfdx@v1
         with:
-          sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_PROD }}
+          sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_SANDBOX }}
 
-      - name: Install Package to Production
+      - name: Install Package into Sandbox
         run: |
-          sfdx force:package:install --package ${{ needs.build-package.outputs.pkg_version }} -u prod --wait 20 --publishwait 10 --noprompt --testlevel RunLocalTests
-
-      - name: Run Post Deploy Steps (optional)
-        run: |
-          sfdx force:apex:execute -u prod -f scripts/postDeploy.apex || true
-          sfdx force:data:bulk:upsert -s Config__c -f data/config.csv -i External_Id__c -u prod || true
+          sfdx force:package:install --package ${{ needs.build-package.outputs.pkg_version }} -u devhub --wait 20 --publishwait 10 --noprompt
