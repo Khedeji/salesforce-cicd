@@ -18,17 +18,14 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install Salesforce CLI
-        run: npm install --global sfdx-cli
-
-      - name: Install npm dependencies
+      - name: Install npm dependencies (if any)
         run: if [ -f package.json ]; then npm ci; fi
 
-      - name: Run LWC Jest tests
+      - name: Run LWC Jest tests (if any)
         run: if [ -f package.json ]; then npm test || true; fi
 
-      - name: Authenticate DevHub (sandbox)
-        uses: amtrack/sfdx-auth@v4
+      - name: Setup SFDX CLI and Authenticate (DevHub - sandbox)
+        uses: sfdx-actions/setup-sfdx@v1
         with:
           sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_DEVHUB }}
 
@@ -46,11 +43,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Salesforce CLI
-        run: npm install --global sfdx-cli
-
-      - name: Authenticate DevHub (sandbox)
-        uses: amtrack/sfdx-auth@v4
+      - name: Setup SFDX CLI and Authenticate (DevHub - sandbox)
+        uses: sfdx-actions/setup-sfdx@v1
         with:
           sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_DEVHUB }}
 
@@ -69,11 +63,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Salesforce CLI
-        run: npm install --global sfdx-cli
-
-      - name: Authenticate Prod
-        uses: amtrack/sfdx-auth@v4
+      - name: Setup SFDX CLI and Authenticate (Prod)
+        uses: sfdx-actions/setup-sfdx@v1
         with:
           sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_PROD }}
 
@@ -90,11 +81,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Salesforce CLI
-        run: npm install --global sfdx-cli
-
-      - name: Authenticate Prod
-        uses: amtrack/sfdx-auth@v4
+      - name: Setup SFDX CLI and Authenticate (Prod)
+        uses: sfdx-actions/setup-sfdx@v1
         with:
           sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_PROD }}
 
