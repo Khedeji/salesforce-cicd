@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-package:
-    name: Create Package Version (DEBUG MODE)
+    name: Create Package Version (DevHub = PROD)
     runs-on: ubuntu-latest
 
     steps:
@@ -23,31 +23,21 @@ jobs:
         run: |
           sf plugins install @salesforce/plugin-packaging
 
-      - name: Create Package Version (DEBUG - DO NOT STOP ON ERROR)
+      - name: Create Package Version
         id: pkg
         run: |
-          echo "Running: sf package version create"
-
-          # run command but DO NOT stop workflow
           sf package version create \
             --package MyApp \
             --path force-app \
             --installation-key "${{ secrets.PACKAGE_KEY }}" \
             --wait 20 \
-            --json > pkg.json 2>&1 || true
+            --json > pkg.json
 
-          echo "===== RAW PACKAGE VERSION OUTPUT ====="
-          cat pkg.json || echo "pkg.json missing"
-          echo "======================================"
+          echo "======= PACKAGE VERSION JSON ======="
+          cat pkg.json
+          echo "===================================="
 
-          # try extract version (may be empty)
-          if jq -e '.result.SubscriberPackageVersionId' pkg.json >/dev/null 2>&1; then
-            v=$(jq -r '.result.SubscriberPackageVersionId' pkg.json)
-            echo "pkg_version=$v" >> $GITHUB_OUTPUT
-          else
-            echo "NO PACKAGE VERSION FOUND"
-            echo "pkg_version=" >> $GITHUB_OUTPUT
-          fi
+          echo "pkg_version=$(jq -r '.result.SubscriberPackageVersionId' pkg.json)" >> $GITHUB_OUTPUT
 
   validate-sandbox:
     name: Validate Package in Sandbox (Check-Only)
@@ -65,13 +55,13 @@ jobs:
 
       - name: Validate in Sandbox (check-only)
         run: |
-          sf package install \
+          sf package version install \
             --package ${{ needs.build-package.outputs.pkg_version }} \
             --target-org devhub \
             --check-only \
+            --no-prompt \
             --wait 20 \
-            --publish-wait 10 \
-            --no-prompt
+            --publish-wait 10
 
   deploy-sandbox:
     name: Deploy Package to Sandbox
@@ -89,9 +79,9 @@ jobs:
 
       - name: Install Package into Sandbox
         run: |
-          sf package install \
+          sf package version install \
             --package ${{ needs.build-package.outputs.pkg_version }} \
             --target-org devhub \
+            --no-prompt \
             --wait 20 \
-            --publish-wait 10 \
-            --no-prompt
+            --publish-wait 10
