@@ -10,6 +10,9 @@ jobs:
     name: Create Package Version (DevHub = PROD)
     runs-on: ubuntu-latest
 
+    outputs:
+      pkg_version: ${{ steps.create_pkg.outputs.pkg_version }}
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -23,21 +26,33 @@ jobs:
         run: |
           sf plugins install @salesforce/plugin-packaging
 
-      - name: Create Package Version
-        id: pkg
+      - name: Create Package Version (handles optional key)
+        id: create_pkg
         run: |
-          sf package version create \
-            --package MyApp \
-            --path force-app \
-            --installation-key "${{ secrets.PACKAGE_KEY }}" \
-            --wait 20 \
-            --json > pkg.json
+          # Build optional key flag (do not echo key)
+          KEY_FLAG=""
+          if [ -n "${{ secrets.PACKAGE_KEY }}" ]; then
+            KEY_FLAG="--installation-key '${{ secrets.PACKAGE_KEY }}'"
+          fi
 
-          echo "======= PACKAGE VERSION JSON ======="
-          cat pkg.json
-          echo "===================================="
+          # Run package version create and capture full output (do not fail the step without showing errors)
+          echo "Running package version create..."
+          eval "sf package version create --package MyApp --path force-app $KEY_FLAG --wait 20 --json" > pkg.json 2>&1 || true
 
-          echo "pkg_version=$(jq -r '.result.SubscriberPackageVersionId' pkg.json)" >> $GITHUB_OUTPUT
+          echo "===== PACKAGE CREATE RAW OUTPUT ====="
+          cat pkg.json || echo "pkg.json missing"
+          echo "====================================="
+
+          # Attempt to extract SubscriberPackageVersionId and set step output
+          if jq -e '.result.SubscriberPackageVersionId' pkg.json >/dev/null 2>&1; then
+            pkgid=$(jq -r '.result.SubscriberPackageVersionId' pkg.json)
+            echo "Found pkg id: $pkgid"
+            echo "pkg_version=$pkgid" >> $GITHUB_OUTPUT
+          else
+            echo "ERROR: No package version id found in pkg.json"
+            echo "pkg_version=" >> $GITHUB_OUTPUT
+            exit 1
+          fi
 
   validate-sandbox:
     name: Validate Package in Sandbox (Check-Only)
@@ -55,8 +70,9 @@ jobs:
 
       - name: Validate in Sandbox (check-only)
         run: |
+          echo "Validating package_version: ${{ needs.build-package.outputs.pkg_version }}"
           sf package version install \
-            --package ${{ needs.build-package.outputs.pkg_version }} \
+            --package "${{ needs.build-package.outputs.pkg_version }}" \
             --target-org devhub \
             --check-only \
             --no-prompt \
@@ -79,8 +95,9 @@ jobs:
 
       - name: Install Package into Sandbox
         run: |
+          echo "Installing package_version: ${{ needs.build-package.outputs.pkg_version }}"
           sf package version install \
-            --package ${{ needs.build-package.outputs.pkg_version }} \
+            --package "${{ needs.build-package.outputs.pkg_version }}" \
             --target-org devhub \
             --no-prompt \
             --wait 20 \
