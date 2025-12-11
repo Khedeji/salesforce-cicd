@@ -1,4 +1,4 @@
-name: CI/CD (DevHub Prod → Sandbox)
+name: CI/CD (Prod DevHub → Sandbox Deploy)
 
 on:
   push:
@@ -13,7 +13,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Authenticate DevHub (PROD)
+      - name: Setup SFDX and Authenticate DevHub (PROD)
         uses: sfdx-actions/setup-sfdx@v1
         with:
           sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_PROD }}
@@ -21,8 +21,7 @@ jobs:
       - name: Create Package Version
         id: pkg
         run: |
-          # Replace MyApp with your package name
-          sfdx force:package:version:create -p MyApp -d force-app -k "${{ secrets.PACKAGE_KEY }}" --wait 20 --json > pkg.json
+          sf package version create --package MyApp --installation-key "${{ secrets.PACKAGE_KEY }}" --path force-app --wait 20 --json > pkg.json
           cat pkg.json
           echo "pkg_version=$(jq -r '.result.SubscriberPackageVersionId' pkg.json)" >> $GITHUB_OUTPUT
 
@@ -39,9 +38,9 @@ jobs:
         with:
           sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_SANDBOX }}
 
-      - name: Validate in Sandbox (check only)
+      - name: Validate in Sandbox (check-only)
         run: |
-          sfdx force:package:install --package ${{ needs.build-package.outputs.pkg_version }} -u devhub --checkonly --wait 20 --publishwait 10 --noprompt
+          sf package install --package ${{ needs.build-package.outputs.pkg_version }} --target-org devhub --check-only --wait 20 --publish-wait 10 --no-prompt
 
   deploy-sandbox:
     name: Deploy Package to Sandbox
@@ -58,4 +57,4 @@ jobs:
 
       - name: Install Package into Sandbox
         run: |
-          sfdx force:package:install --package ${{ needs.build-package.outputs.pkg_version }} -u devhub --wait 20 --publishwait 10 --noprompt
+          sf package install --package ${{ needs.build-package.outputs.pkg_version }} --target-org devhub --wait 20 --publish-wait 10 --no-prompt
