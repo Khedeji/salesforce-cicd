@@ -9,7 +9,6 @@ jobs:
   build-package:
     name: Create Package Version (DevHub = PROD)
     runs-on: ubuntu-latest
-
     outputs:
       pkg_version: ${{ steps.create_pkg.outputs.pkg_version }}
 
@@ -26,24 +25,26 @@ jobs:
         run: |
           sf plugins install @salesforce/plugin-packaging
 
-      - name: Create Package Version (handles optional key)
+      - name: Create Package Version (handles optional key or bypass)
         id: create_pkg
         run: |
-          # Build optional key flag (do not echo key)
+          # Build either installation key flag or bypass flag
           KEY_FLAG=""
           if [ -n "${{ secrets.PACKAGE_KEY }}" ]; then
+            echo "Using installation key from secret (will not print key)"
             KEY_FLAG="--installation-key '${{ secrets.PACKAGE_KEY }}'"
+          else
+            echo "No PACKAGE_KEY secret found — using installation-key-bypass"
+            KEY_FLAG="--installation-key-bypass"
           fi
 
-          # Run package version create and capture full output (do not fail the step without showing errors)
-          echo "Running package version create..."
+          echo "Running: sf package version create --package MyApp --path force-app $KEY_FLAG"
           eval "sf package version create --package MyApp --path force-app $KEY_FLAG --wait 20 --json" > pkg.json 2>&1 || true
 
           echo "===== PACKAGE CREATE RAW OUTPUT ====="
           cat pkg.json || echo "pkg.json missing"
           echo "====================================="
 
-          # Attempt to extract SubscriberPackageVersionId and set step output
           if jq -e '.result.SubscriberPackageVersionId' pkg.json >/dev/null 2>&1; then
             pkgid=$(jq -r '.result.SubscriberPackageVersionId' pkg.json)
             echo "Found pkg id: $pkgid"
