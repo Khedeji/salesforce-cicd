@@ -119,14 +119,12 @@
 
 name: Install existing package version to Sandbox
 
-# Trigger manually or on push (adjust as you like)
 on:
   workflow_dispatch:
   push:
     branches:
       - main
 
-# Put the package version id here so it's easy to change
 env:
   PACKAGE_VERSION_ID: "04tf600000090OzAAI"
 
@@ -139,38 +137,60 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup SF CLI
+        uses: salesforcecli/action-setup@v2
+        with:
+          cli: sf
+
       - name: Authenticate Sandbox
         uses: sfdx-actions/setup-sfdx@v1
         with:
-          sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_DEVHUB }}
+          sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_SANDBOX }}
 
-      - name: Ensure Packaging Plugin is installed
+      - name: Install Packaging Plugin
         run: |
           sf plugins install @salesforce/plugin-packaging || true
           sf plugins --core
 
-      - name: Debug show package id
+      - name: Detect Sandbox Alias
+        id: detect_alias
         run: |
-          echo "PACKAGE_VERSION_ID=${{ env.PACKAGE_VERSION_ID }}"
-          if [ -z "${{ env.PACKAGE_VERSION_ID }}" ]; then
-            echo "ERROR: PACKAGE_VERSION_ID is empty - set env or workflow input"
+          echo "Listing authenticated orgs:"
+          sf org list --json
+          ALIAS=$(sf org list --json | jq -r '.result[] | select(.status=="Connected") | .alias' | head -n1)
+
+          if [ -z "$ALIAS" ]; then
+            echo "ERROR: No connected sandbox alias found"
             exit 1
           fi
 
+          echo "Resolved sandbox alias: $ALIAS"
+          echo "sandbox_alias=$ALIAS" >> $GITHUB_OUTPUT
+
+      - name: Debug show package id
+        run: |
+          echo "Using PACKAGE_VERSION_ID = $PACKAGE_VERSION_ID"
+
       - name: Validate (check-only) install in Sandbox
         run: |
-          # Prepare optional key flag
-          KEY_FLAG=""
+          SANDBOX_ALIAS="${{ steps.detect_alias.outputs.sandbox_alias }}"
+
+          echo "Running check-only install for package $PACKAGE_VERSION_ID into org $SANDBOX_ALIAS"
+
           if [ -n "${{ secrets.PACKAGE_KEY }}" ]; then
-            echo "Using installation key from secret"
             KEY_FLAG="--installation-key '${{ secrets.PACKAGE_KEY }}'"
           else
-            echo "No PACKAGE_KEY secret set — using installation-key-bypass for check-only"
             KEY_FLAG="--installation-key-bypass"
           fi
 
-          echo "Running check-only install for package: $PACKAGE_VERSION_ID"
-          eval "sf package version install --package ${PACKAGE_VERSION_ID} --target-org devhub --check-only --no-prompt --wait 20 --publish-wait 10 $KEY_FLAG"
+          sf package version install \
+            --package "$PACKAGE_VERSION_ID" \
+            --target-org "$SANDBOX_ALIAS" \
+            --check-only \
+            --wait 20 \
+            --publish-wait 10 \
+            --no-prompt \
+            $KEY_FLAG
 
   deploy-sandbox:
     name: Install package to Sandbox
@@ -181,32 +201,48 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup SF CLI
+        uses: salesforcecli/action-setup@v2
+        with:
+          cli: sf
+
       - name: Authenticate Sandbox
         uses: sfdx-actions/setup-sfdx@v1
         with:
-          sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_DEVHUB }}
+          sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_SANDBOX }}
 
-      - name: Ensure Packaging Plugin is installed
+      - name: Install Packaging Plugin
         run: |
           sf plugins install @salesforce/plugin-packaging || true
           sf plugins --core
 
-      - name: Debug show package id before install
+      - name: Detect Sandbox Alias
+        id: detect_alias_deploy
         run: |
-          echo "PACKAGE_VERSION_ID=${{ env.PACKAGE_VERSION_ID }}"
-          if [ -z "${{ env.PACKAGE_VERSION_ID }}" ]; then
-            echo "ERROR: PACKAGE_VERSION_ID is empty - aborting"
-            exit 1
-          fi
+          ALIAS=$(sf org list --json | jq -r '.result[] | select(.status=="Connected") | .alias' | head -n1)
+          echo "Resolved sandbox alias: $ALIAS"
+          echo "sandbox_alias=$ALIAS" >> $GITHUB_OUTPUT
+
+      - name: Debug show package id
+        run: |
+          echo "Installing PACKAGE_VERSION_ID = $PACKAGE_VERSION_ID"
 
       - name: Install package into Sandbox
         run: |
-          # Prepare optional key flag
-          KEY_FLAG=""
+          SANDBOX_ALIAS="${{ steps.detect_alias_deploy.outputs.sandbox_alias }}"
+
           if [ -n "${{ secrets.PACKAGE_KEY }}" ]; then
-            echo "Using installation key from secret"
             KEY_FLAG="--installation-key '${{ secrets.PACKAGE_KEY }}'"
+          else
+            KEY_FLAG=""
           fi
 
-          echo "Installing package: ${PACKAGE_VERSION_ID} into Sandbox"
-          eval "sf package version install --package ${PACKAGE_VERSION_ID} --target-org devhub --no-prompt --wait 20 --publish-wait 10 $KEY_FLAG"
+          echo "Installing package $PACKAGE_VERSION_ID into org $SANDBOX_ALIAS"
+
+          sf package version install \
+            --package "$PACKAGE_VERSION_ID" \
+            --target-org "$SANDBOX_ALIAS" \
+            --wait 20 \
+            --publish-wait 10 \
+            --no-prompt \
+            $KEY_FLAG
