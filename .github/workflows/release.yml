@@ -136,10 +136,36 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Install Salesforce CLI (sf)
+      - name: Install Salesforce CLI and show env
         run: |
+          set -euxo pipefail
+
+          echo "1) Install @salesforce/cli (npm global)"
           npm install --global @salesforce/cli
-          sf --version
+
+          echo "2) Show which sf is on PATH and version"
+          which sf || true
+          sf --version || true
+
+          echo "3) Ensure no old sfdx is in PATH"
+          which sfdx || true
+          sfdx --version || true
+
+          echo "4) Install packaging plugin (idempotent)"
+          sf plugins install @salesforce/plugin-packaging || true
+
+          echo "5) Show installed plugins and package help"
+          sf plugins --core || true
+          sf package --help || true
+
+      - name: Authenticate Sandbox (SF CLI)
+        run: |
+          set -euxo pipefail
+          echo "${{ secrets.SFDX_AUTH_URL_SANDBOX }}" > sandbox.sfdx
+          # use sf to login from auth url; create alias 'sandbox'
+          sf org login sfdx-url --sfdx-url-file sandbox.sfdx --alias sandbox --set-default
+          echo "Authenticated orgs:"
+          sf org list --json
 
       - name: Authenticate DevHub (optional, ensures package commands work)
         # This logs your DevHub into the runner (used if you later want to create versions)
@@ -151,16 +177,6 @@ jobs:
             sf org login sfdx-url --sfdx-url-file devhub.sfdx --alias devhub --set-default-dev-hub
             sf org display --target-org devhub --verbose || true
           fi
-
-      - name: Authenticate Sandbox (SF CLI)
-        run: |
-          if [ -z "${{ secrets.SFDX_AUTH_URL_SANDBOX }}" ]; then
-            echo "ERROR: SFDX_AUTH_URL_SANDBOX secret is not set"; exit 1
-          fi
-          echo "${{ secrets.SFDX_AUTH_URL_SANDBOX }}" > sandbox.sfdx
-          sf org login sfdx-url --sfdx-url-file sandbox.sfdx --alias sandbox --set-default
-          echo "Authenticated orgs:"
-          sf org list --json
 
       - name: Install packaging plugin & show available commands
         run: |
@@ -209,17 +225,33 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Install Salesforce CLI (sf)
+      - name: Install Salesforce CLI and show env
         run: |
+          set -euxo pipefail
+
+          echo "1) Install @salesforce/cli (npm global)"
           npm install --global @salesforce/cli
-          sf --version
+
+          echo "2) Show which sf is on PATH and version"
+          which sf || true
+          sf --version || true
+
+          echo "3) Ensure no old sfdx is in PATH"
+          which sfdx || true
+          sfdx --version || true
+
+          echo "4) Install packaging plugin (idempotent)"
+          sf plugins install @salesforce/plugin-packaging || true
+
+          echo "5) Show installed plugins and package help"
+          sf plugins --core || true
+          sf package --help || true
 
       - name: Authenticate Sandbox (SF CLI)
         run: |
-          if [ -z "${{ secrets.SFDX_AUTH_URL_SANDBOX }}" ]; then
-            echo "ERROR: SFDX_AUTH_URL_SANDBOX secret is not set"; exit 1
-          fi
+          set -euxo pipefail
           echo "${{ secrets.SFDX_AUTH_URL_SANDBOX }}" > sandbox.sfdx
+          # use sf to login from auth url; create alias 'sandbox'
           sf org login sfdx-url --sfdx-url-file sandbox.sfdx --alias sandbox --set-default
           echo "Authenticated orgs:"
           sf org list --json
