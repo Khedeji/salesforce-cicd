@@ -142,7 +142,7 @@ jobs:
       - name: Authenticate Sandbox
         uses: sfdx-actions/setup-sfdx@v1
         with:
-          sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_SANDBOX }}
+          sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_DEVHUB }}
 
       - name: Install Packaging Plugin
         run: |
@@ -195,7 +195,7 @@ jobs:
       - name: Authenticate Sandbox
         uses: sfdx-actions/setup-sfdx@v1
         with:
-          sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_SANDBOX }}
+          sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_DEVHUB }}
 
       - name: Install Packaging Plugin
         run: |
