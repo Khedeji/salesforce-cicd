@@ -137,8 +137,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup SF CLI
-        uses: salesforcecli/action-setup@v2
+      - name: Setup Salesforce CLI (sf)
+        uses: salesforcecli/github-action@v2
         with:
           cli: sf
 
@@ -158,13 +158,6 @@ jobs:
           echo "Listing authenticated orgs:"
           sf org list --json
           ALIAS=$(sf org list --json | jq -r '.result[] | select(.status=="Connected") | .alias' | head -n1)
-
-          if [ -z "$ALIAS" ]; then
-            echo "ERROR: No connected sandbox alias found"
-            exit 1
-          fi
-
-          echo "Resolved sandbox alias: $ALIAS"
           echo "sandbox_alias=$ALIAS" >> $GITHUB_OUTPUT
 
       - name: Debug show package id
@@ -174,7 +167,6 @@ jobs:
       - name: Validate (check-only) install in Sandbox
         run: |
           SANDBOX_ALIAS="${{ steps.detect_alias.outputs.sandbox_alias }}"
-
           echo "Running check-only install for package $PACKAGE_VERSION_ID into org $SANDBOX_ALIAS"
 
           if [ -n "${{ secrets.PACKAGE_KEY }}" ]; then
@@ -201,8 +193,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup SF CLI
-        uses: salesforcecli/action-setup@v2
+      - name: Setup Salesforce CLI (sf)
+        uses: salesforcecli/github-action@v2
         with:
           cli: sf
 
@@ -220,7 +212,6 @@ jobs:
         id: detect_alias_deploy
         run: |
           ALIAS=$(sf org list --json | jq -r '.result[] | select(.status=="Connected") | .alias' | head -n1)
-          echo "Resolved sandbox alias: $ALIAS"
           echo "sandbox_alias=$ALIAS" >> $GITHUB_OUTPUT
 
       - name: Debug show package id
