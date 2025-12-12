@@ -1,142 +1,67 @@
-# name: CI/CD - DevHub (PROD) → Sandbox
+name: CI/CD - DevHub (PROD) → Sandbox
 
-# on:
-#   push:
-#     branches: [main]
-#   workflow_dispatch:
-
-# jobs:
-#   build-package:
-#     name: Create Package Version (DevHub = PROD)
-#     runs-on: ubuntu-latest
-#     outputs:
-#       pkg_version: ${{ steps.create_pkg.outputs.pkg_version }}
-
-#     steps:
-#       - name: Checkout Code
-#         uses: actions/checkout@v4
-
-#       - name: Authenticate DevHub (PROD)
-#         uses: sfdx-actions/setup-sfdx@v1
-#         with:
-#           sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_PROD }}
-
-#       - name: Install Packaging Plugin
-#         run: |
-#           sf plugins install @salesforce/plugin-packaging
-
-#       - name: Create Package Version (handles optional key or bypass)
-#         id: create_pkg
-#         run: |
-#           # Build either installation key flag or bypass flag
-#           KEY_FLAG=""
-#           if [ -n "${{ secrets.PACKAGE_KEY }}" ]; then
-#             echo "Using installation key from secret (will not print key)"
-#             KEY_FLAG="--installation-key '${{ secrets.PACKAGE_KEY }}'"
-#           else
-#             echo "No PACKAGE_KEY secret found — using installation-key-bypass"
-#             KEY_FLAG="--installation-key-bypass"
-#           fi
-
-#           echo "Running: sf package version create --package MyApp --path force-app $KEY_FLAG"
-#           eval "sf package version create --package MyApp --path force-app $KEY_FLAG --wait 20 --json" > pkg.json 2>&1 || true
-
-#           echo "===== PACKAGE CREATE RAW OUTPUT ====="
-#           cat pkg.json || echo "pkg.json missing"
-#           echo "====================================="
-
-#           if jq -e '.result.SubscriberPackageVersionId' pkg.json >/dev/null 2>&1; then
-#             pkgid=$(jq -r '.result.SubscriberPackageVersionId' pkg.json)
-#             echo "Found pkg id: $pkgid"
-#             echo "pkg_version=$pkgid" >> $GITHUB_OUTPUT
-#           else
-#             echo "ERROR: No package version id found in pkg.json"
-#             echo "pkg_version=" >> $GITHUB_OUTPUT
-#             exit 1
-#           fi
-
-#   validate-sandbox:
-#     name: Validate Package in Sandbox (Check-Only)
-#     runs-on: ubuntu-latest
-#     needs: build-package
-
-#     steps:
-#       - name: Checkout Code
-#         uses: actions/checkout@v4
-
-#       - name: Authenticate Sandbox
-#         uses: sfdx-actions/setup-sfdx@v1
-#         with:
-#           sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_SANDBOX }}
-
-#       - name: Install Packaging Plugin (needed per-job)
-#         run: |
-#           sf plugins install @salesforce/plugin-packaging || true
-#           sf plugins --core
-
-#       - name: Debug show package id
-#         run: |
-#           echo "build-package output pkg_version = '${{ needs.build-package.outputs.pkg_version }}'"
-#           if [ -z "${{ needs.build-package.outputs.pkg_version }}" ]; then
-#             echo "ERROR: pkg_version is empty — aborting"
-#             exit 1
-#           fi
-
-#       - name: Validate in Sandbox (check-only)
-#         run: |
-#           sf package version install  --package "${{ needs.build-package.outputs.pkg_version }}" --target-org devhub --check-only  --no-prompt --wait 20 --publish-wait 10
-
-#   deploy-sandbox:
-#     name: Deploy Package to Sandbox
-#     runs-on: ubuntu-latest
-#     needs: validate-sandbox
-
-#     steps:
-#       - name: Checkout Code
-#         uses: actions/checkout@v4
-
-#       - name: Authenticate Sandbox
-#         uses: sfdx-actions/setup-sfdx@v1
-#         with:
-#           sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_SANDBOX }}
-
-#       - name: Install Packaging Plugin (needed per-job)
-#         run: |
-#           sf plugins install @salesforce/plugin-packaging || true
-#           sf plugins --core
-
-#       - name: Debug show package id before install
-#         run: |
-#           echo "build-package output pkg_version = '${{ needs.build-package.outputs.pkg_version }}'"
-#           if [ -z "${{ needs.build-package.outputs.pkg_version }}" ]; then
-#             echo "ERROR: pkg_version is empty — aborting deploy"
-#             exit 1
-#           fi
-
-#       - name: Install Package into Sandbox
-#         run: |
-#           sf package version install  --package "${{ needs.build-package.outputs.pkg_version }}" --target-org devhub   --no-prompt --wait 20 --publish-wait 10
-
-name: Install existing package version to Sandbox
-
-# Trigger manually or on push (adjust as you like)
 on:
-  workflow_dispatch:
   push:
-    branches:
-      - main
-
-# Put the package version id here so it's easy to change
-env:
-  PACKAGE_VERSION_ID: "04tf60000008ytRAAQ"
+    branches: [main]
+  workflow_dispatch:
 
 jobs:
-  validate-sandbox:
-    name: Validate package in Sandbox (check-only)
+  build-package:
+    name: Create Package Version (DevHub = PROD)
     runs-on: ubuntu-latest
+    outputs:
+      pkg_version: ${{ steps.create_pkg.outputs.pkg_version }}
 
     steps:
-      - name: Checkout
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Authenticate DevHub (PROD)
+        uses: sfdx-actions/setup-sfdx@v1
+        with:
+          sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_PROD }}
+
+      - name: Install Packaging Plugin
+        run: |
+          sf plugins install @salesforce/plugin-packaging
+
+      - name: Create Package Version (handles optional key or bypass)
+        id: create_pkg
+        run: |
+          # Build either installation key flag or bypass flag
+          KEY_FLAG=""
+          if [ -n "${{ secrets.PACKAGE_KEY }}" ]; then
+            echo "Using installation key from secret (will not print key)"
+            KEY_FLAG="--installation-key '${{ secrets.PACKAGE_KEY }}'"
+          else
+            echo "No PACKAGE_KEY secret found — using installation-key-bypass"
+            KEY_FLAG="--installation-key-bypass"
+          fi
+
+          echo "Running: sf package version create --package MyApp --path force-app $KEY_FLAG"
+          eval "sf package version create --package MyApp --path force-app $KEY_FLAG --wait 20 --json" > pkg.json 2>&1 || true
+
+          echo "===== PACKAGE CREATE RAW OUTPUT ====="
+          cat pkg.json || echo "pkg.json missing"
+          echo "====================================="
+
+          if jq -e '.result.SubscriberPackageVersionId' pkg.json >/dev/null 2>&1; then
+            pkgid=$(jq -r '.result.SubscriberPackageVersionId' pkg.json)
+            echo "Found pkg id: $pkgid"
+            echo "pkg_version=$pkgid" >> $GITHUB_OUTPUT
+          else
+            echo "ERROR: No package version id found in pkg.json"
+            echo "pkg_version=" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+  validate-sandbox:
+    name: Validate Package in Sandbox (Check-Only)
+    runs-on: ubuntu-latest
+    needs: build-package
+
+    steps:
+      - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Authenticate Sandbox
@@ -144,41 +69,30 @@ jobs:
         with:
           sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_DEVHUB }}
 
-      - name: Ensure Packaging Plugin is installed
+      - name: Install Packaging Plugin (needed per-job)
         run: |
           sf plugins install @salesforce/plugin-packaging || true
           sf plugins --core
 
       - name: Debug show package id
         run: |
-          echo "PACKAGE_VERSION_ID=${{ env.PACKAGE_VERSION_ID }}"
-          if [ -z "${{ env.PACKAGE_VERSION_ID }}" ]; then
-            echo "ERROR: PACKAGE_VERSION_ID is empty - set env or workflow input"
+          echo "build-package output pkg_version = '${{ needs.build-package.outputs.pkg_version }}'"
+          if [ -z "${{ needs.build-package.outputs.pkg_version }}" ]; then
+            echo "ERROR: pkg_version is empty — aborting"
             exit 1
           fi
 
-      - name: Validate (check-only) install in Sandbox
+      - name: Validate in Sandbox (check-only)
         run: |
-          # Prepare optional key flag
-          KEY_FLAG=""
-          if [ -n "${{ secrets.PACKAGE_KEY }}" ]; then
-            echo "Using installation key from secret"
-            KEY_FLAG="--installation-key '${{ secrets.PACKAGE_KEY }}'"
-          else
-            echo "No PACKAGE_KEY secret set — using installation-key-bypass for check-only"
-            KEY_FLAG="--installation-key-bypass"
-          fi
-
-          echo "Running check-only install for package: $PACKAGE_VERSION_ID"
-          eval "sf package version install --package ${PACKAGE_VERSION_ID} --target-org devhub --check-only --no-prompt --wait 20 --publish-wait 10 $KEY_FLAG"
+          sf package version install  --package "${{ needs.build-package.outputs.pkg_version }}" --target-org devhub --check-only  --no-prompt --wait 20 --publish-wait 10
 
   deploy-sandbox:
-    name: Install package to Sandbox
+    name: Deploy Package to Sandbox
     runs-on: ubuntu-latest
     needs: validate-sandbox
 
     steps:
-      - name: Checkout
+      - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Authenticate Sandbox
@@ -186,27 +100,113 @@ jobs:
         with:
           sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_DEVHUB }}
 
-      - name: Ensure Packaging Plugin is installed
+      - name: Install Packaging Plugin (needed per-job)
         run: |
           sf plugins install @salesforce/plugin-packaging || true
           sf plugins --core
 
       - name: Debug show package id before install
         run: |
-          echo "PACKAGE_VERSION_ID=${{ env.PACKAGE_VERSION_ID }}"
-          if [ -z "${{ env.PACKAGE_VERSION_ID }}" ]; then
-            echo "ERROR: PACKAGE_VERSION_ID is empty - aborting"
+          echo "build-package output pkg_version = '${{ needs.build-package.outputs.pkg_version }}'"
+          if [ -z "${{ needs.build-package.outputs.pkg_version }}" ]; then
+            echo "ERROR: pkg_version is empty — aborting deploy"
             exit 1
           fi
 
-      - name: Install package into Sandbox
+      - name: Install Package into Sandbox
         run: |
-          # Prepare optional key flag
-          KEY_FLAG=""
-          if [ -n "${{ secrets.PACKAGE_KEY }}" ]; then
-            echo "Using installation key from secret"
-            KEY_FLAG="--installation-key '${{ secrets.PACKAGE_KEY }}'"
-          fi
+          sf package version install  --package "${{ needs.build-package.outputs.pkg_version }}" --target-org devhub   --no-prompt --wait 20 --publish-wait 10
 
-          echo "Installing package: ${PACKAGE_VERSION_ID} into Sandbox"
-          eval "sf package version install --package ${PACKAGE_VERSION_ID} --target-org devhub --no-prompt --wait 20 --publish-wait 10 $KEY_FLAG"
+# name: Install existing package version to Sandbox
+
+# # Trigger manually or on push (adjust as you like)
+# on:
+#   workflow_dispatch:
+#   push:
+#     branches:
+#       - main
+
+# # Put the package version id here so it's easy to change
+# env:
+#   PACKAGE_VERSION_ID: "04tf60000008ytRAAQ"
+
+# jobs:
+#   validate-sandbox:
+#     name: Validate package in Sandbox (check-only)
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v4
+
+#       - name: Authenticate Sandbox
+#         uses: sfdx-actions/setup-sfdx@v1
+#         with:
+#           sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_DEVHUB }}
+
+#       - name: Ensure Packaging Plugin is installed
+#         run: |
+#           sf plugins install @salesforce/plugin-packaging || true
+#           sf plugins --core
+
+#       - name: Debug show package id
+#         run: |
+#           echo "PACKAGE_VERSION_ID=${{ env.PACKAGE_VERSION_ID }}"
+#           if [ -z "${{ env.PACKAGE_VERSION_ID }}" ]; then
+#             echo "ERROR: PACKAGE_VERSION_ID is empty - set env or workflow input"
+#             exit 1
+#           fi
+
+#       - name: Validate (check-only) install in Sandbox
+#         run: |
+#           # Prepare optional key flag
+#           KEY_FLAG=""
+#           if [ -n "${{ secrets.PACKAGE_KEY }}" ]; then
+#             echo "Using installation key from secret"
+#             KEY_FLAG="--installation-key '${{ secrets.PACKAGE_KEY }}'"
+#           else
+#             echo "No PACKAGE_KEY secret set — using installation-key-bypass for check-only"
+#             KEY_FLAG="--installation-key-bypass"
+#           fi
+
+#           echo "Running check-only install for package: $PACKAGE_VERSION_ID"
+#           eval "sf package version install --package ${PACKAGE_VERSION_ID} --target-org devhub --check-only --no-prompt --wait 20 --publish-wait 10 $KEY_FLAG"
+
+#   deploy-sandbox:
+#     name: Install package to Sandbox
+#     runs-on: ubuntu-latest
+#     needs: validate-sandbox
+
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v4
+
+#       - name: Authenticate Sandbox
+#         uses: sfdx-actions/setup-sfdx@v1
+#         with:
+#           sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_DEVHUB }}
+
+#       - name: Ensure Packaging Plugin is installed
+#         run: |
+#           sf plugins install @salesforce/plugin-packaging || true
+#           sf plugins --core
+
+#       - name: Debug show package id before install
+#         run: |
+#           echo "PACKAGE_VERSION_ID=${{ env.PACKAGE_VERSION_ID }}"
+#           if [ -z "${{ env.PACKAGE_VERSION_ID }}" ]; then
+#             echo "ERROR: PACKAGE_VERSION_ID is empty - aborting"
+#             exit 1
+#           fi
+
+#       - name: Install package into Sandbox
+#         run: |
+#           # Prepare optional key flag
+#           KEY_FLAG=""
+#           if [ -n "${{ secrets.PACKAGE_KEY }}" ]; then
+#             echo "Using installation key from secret"
+#             KEY_FLAG="--installation-key '${{ secrets.PACKAGE_KEY }}'"
+#           fi
+
+#           echo "Installing package: ${PACKAGE_VERSION_ID} into Sandbox"
+#           eval "sf package version install --package ${PACKAGE_VERSION_ID} --target-org devhub --no-prompt --wait 20 --publish-wait 10 $KEY_FLAG"
