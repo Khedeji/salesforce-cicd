@@ -128,7 +128,7 @@ on:
 
 # Put the package version id here so it's easy to change
 env:
-  PACKAGE_VERSION_ID: "04tf60000008ytRAAQ"
+  PACKAGE_VERSION_ID: "04tf600000090OzAAI"
 
 jobs:
   validate-sandbox:
@@ -170,7 +170,7 @@ jobs:
           fi
 
           echo "Running check-only install for package: $PACKAGE_VERSION_ID"
-          eval "sf package  install --package ${PACKAGE_VERSION_ID} --target-org devhub --check-only --no-prompt --wait 20 --publish-wait 10 $KEY_FLAG"
+          eval "sf package version install --package ${PACKAGE_VERSION_ID} --target-org devhub --check-only --no-prompt --wait 20 --publish-wait 10 $KEY_FLAG"
 
   deploy-sandbox:
     name: Install package to Sandbox
@@ -209,4 +209,4 @@ jobs:
           fi
 
           echo "Installing package: ${PACKAGE_VERSION_ID} into Sandbox"
-          eval "sf package  install --package ${PACKAGE_VERSION_ID} --target-org devhub --no-prompt --wait 20 --publish-wait 10 $KEY_FLAG"
+          eval "sf package version install --package ${PACKAGE_VERSION_ID} --target-org devhub --no-prompt --wait 20 --publish-wait 10 $KEY_FLAG"
