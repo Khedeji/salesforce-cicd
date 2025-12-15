@@ -53,6 +53,7 @@ jobs:
           sf package version create \
             --package "$PACKAGE_ALIAS" \
             --path force-app \
+            --installation-key-bypass \
             --wait 20 \
             --json > pkg.json
 
