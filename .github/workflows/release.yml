@@ -1,297 +1,102 @@
-# name: CI/CD - DevHub (PROD) → Sandbox
+name: CI/CD - DevHub → Sandbox (Package)
 
-# on:
-#   push:
-#     branches: [main]
-#   workflow_dispatch:
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
 
-# jobs:
-#   build-package:
-#     name: Create Package Version (DevHub = PROD)
-#     runs-on: ubuntu-latest
-#     outputs:
-#       pkg_version: ${{ steps.create_pkg.outputs.pkg_version }}
+env:
+  PACKAGE_ALIAS: MyApp # must exist in sfdx-project.json
 
-#     steps:
-#       - name: Checkout Code
-#         uses: actions/checkout@v4
+jobs:
+  # --------------------------------------------------
+  # 1️⃣ CREATE PACKAGE VERSION IN DEVHUB
+  # --------------------------------------------------
+  build-package:
+    name: Create Package Version (DevHub)
+    runs-on: ubuntu-latest
+    outputs:
+      pkg_version: ${{ steps.create_pkg.outputs.pkg_version }}
 
-#       - name: Authenticate DevHub (PROD)
-#         uses: sfdx-actions/setup-sfdx@v1
-#         with:
-#           sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_PROD }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-#       - name: Install Packaging Plugin
-#         run: |
-#           sf plugins install @salesforce/plugin-packaging
+      - name: Install Salesforce CLI
+        run: |
+          npm install --global @salesforce/cli
+          export PATH="$(npm bin -g):$PATH"
+          sf --version
 
-#       - name: Create Package Version (handles optional key or bypass)
-#         id: create_pkg
-#         run: |
-#           # Build either installation key flag or bypass flag
-#           KEY_FLAG=""
-#           if [ -n "${{ secrets.PACKAGE_KEY }}" ]; then
-#             echo "Using installation key from secret (will not print key)"
-#             KEY_FLAG="--installation-key '${{ secrets.PACKAGE_KEY }}'"
-#           else
-#             echo "No PACKAGE_KEY secret found — using installation-key-bypass"
-#             KEY_FLAG="--installation-key-bypass"
-#           fi
+      - name: Authenticate DevHub
+        run: |
+          echo "${{ secrets.SFDX_AUTH_URL_DEVHUB }}" > devhub.sfdx
+          sf org login sfdx-url \
+            --sfdx-url-file devhub.sfdx \
+            --alias devhub \
+            --set-default-dev-hub
+          sf org list
 
-#           echo "Running: sf package version create --package MyApp --path force-app $KEY_FLAG"
-#           eval "sf package version create --package MyApp --path force-app $KEY_FLAG --wait 20 --json" > pkg.json 2>&1 || true
+      - name: Create Package Version in DevHub
+        id: create_pkg
+        run: |
+          set -e
 
-#           echo "===== PACKAGE CREATE RAW OUTPUT ====="
-#           cat pkg.json || echo "pkg.json missing"
-#           echo "====================================="
+          echo "Creating package version for ${PACKAGE_ALIAS} in DevHub"
 
-#           if jq -e '.result.SubscriberPackageVersionId' pkg.json >/dev/null 2>&1; then
-#             pkgid=$(jq -r '.result.SubscriberPackageVersionId' pkg.json)
-#             echo "Found pkg id: $pkgid"
-#             echo "pkg_version=$pkgid" >> $GITHUB_OUTPUT
-#           else
-#             echo "ERROR: No package version id found in pkg.json"
-#             echo "pkg_version=" >> $GITHUB_OUTPUT
-#             exit 1
-#           fi
+          sf package version create \
+            --package "$PACKAGE_ALIAS" \
+            --path force-app \
+            --wait 20 \
+            --json > pkg.json
 
-#   validate-sandbox:
-#     name: Validate Package in Sandbox (Check-Only)
-#     runs-on: ubuntu-latest
-#     needs: build-package
+          echo "===== PACKAGE CREATE OUTPUT ====="
+          cat pkg.json
+          echo "================================"
 
-#     steps:
-#       - name: Checkout Code
-#         uses: actions/checkout@v4
+          PKG_ID=$(jq -r '.result.SubscriberPackageVersionId' pkg.json)
 
-#       - name: Authenticate Sandbox
-#         uses: sfdx-actions/setup-sfdx@v1
-#         with:
-#           sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_DEVHUB }}
+          if [ -z "$PKG_ID" ] || [ "$PKG_ID" = "null" ]; then
+            echo "ERROR: Package version creation failed"
+            exit 1
+          fi
 
-#       - name: Install Packaging Plugin (needed per-job)
-#         run: |
-#           sf plugins install @salesforce/plugin-packaging || true
-#           sf plugins --core
+          echo "Created package version: $PKG_ID"
+          echo "pkg_version=$PKG_ID" >> $GITHUB_OUTPUT
 
-#       - name: Debug show package id
-#         run: |
-#           echo "build-package output pkg_version = '${{ needs.build-package.outputs.pkg_version }}'"
-#           if [ -z "${{ needs.build-package.outputs.pkg_version }}" ]; then
-#             echo "ERROR: pkg_version is empty — aborting"
-#             exit 1
-#           fi
+  # --------------------------------------------------
+  # 2️⃣ INSTALL PACKAGE INTO SANDBOX
+  # --------------------------------------------------
+  deploy-sandbox:
+    name: Install Package into Sandbox
+    runs-on: ubuntu-latest
+    needs: build-package
 
-#       - name: Validate in Sandbox (check-only)
-#         run: |
-#           sf package install  --package "${{ needs.build-package.outputs.pkg_version }}" --target-org devhub --check-only  --no-prompt --wait 20 --publish-wait 10
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-#   deploy-sandbox:
-#     name: Deploy Package to Sandbox
-#     runs-on: ubuntu-latest
-#     needs: validate-sandbox
+      - name: Install Salesforce CLI
+        run: |
+          npm install --global @salesforce/cli
+          export PATH="$(npm bin -g):$PATH"
+          sf --version
 
-#     steps:
-#       - name: Checkout Code
-#         uses: actions/checkout@v4
+      - name: Authenticate Sandbox
+        run: |
+          echo "${{ secrets.SFDX_AUTH_URL_SANDBOX }}" > sandbox.sfdx
+          sf org login sfdx-url \
+            --sfdx-url-file sandbox.sfdx \
+            --alias sandbox \
+            --set-default
+          sf org list
 
-#       - name: Authenticate Sandbox
-#         uses: sfdx-actions/setup-sfdx@v1
-#         with:
-#           sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_DEVHUB }}
+      - name: Install Package into Sandbox
+        run: |
+          echo "Installing package version: ${{ needs.build-package.outputs.pkg_version }} into Sandbox"
 
-#       - name: Install Packaging Plugin (needed per-job)
-#         run: |
-#           sf plugins install @salesforce/plugin-packaging || true
-#           sf plugins --core
-
-#       - name: Debug show package id before install
-#         run: |
-#           echo "build-package output pkg_version = '${{ needs.build-package.outputs.pkg_version }}'"
-#           if [ -z "${{ needs.build-package.outputs.pkg_version }}" ]; then
-#             echo "ERROR: pkg_version is empty — aborting deploy"
-#             exit 1
-#           fi
-
-#       - name: Install Package into Sandbox
-#         run: |
-#           sf package install  --package "${{ needs.build-package.outputs.pkg_version }}" --target-org devhub   --no-prompt --wait 20 --publish-wait 10
-
-# name: Install existing package version to Sandbox
-
-# on:
-#   workflow_dispatch:
-#   push:
-#     branches: [main]
-
-# env:
-#   # Replace this with your package version id if different
-#   PACKAGE_VERSION_ID: "04tf600000090OzAAI"
-
-# jobs:
-#   validate:
-#     name: Validate package in Sandbox (check-only)
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Checkout repo
-#         uses: actions/checkout@v4
-
-#       - name: Install Salesforce CLI and show env
-#         run: |
-#           set -euxo pipefail
-
-#           echo "1) Install @salesforce/cli (npm global)"
-#           npm install --global @salesforce/cli
-
-#           echo "2) Show which sf is on PATH and version"
-#           which sf || true
-#           sf --version || true
-
-#           echo "3) Ensure no old sfdx is in PATH"
-#           which sfdx || true
-#           sfdx --version || true
-
-#           echo "4) Install packaging plugin (idempotent)"
-#           sf plugins install @salesforce/plugin-packaging || true
-
-#           echo "5) Show installed plugins and package help"
-#           sf plugins --core || true
-#           sf package --help || true
-
-#       - name: Authenticate Sandbox (SF CLI)
-#         run: |
-#           set -euxo pipefail
-#           echo "${{ secrets.SFDX_AUTH_URL_SANDBOX }}" > sandbox.sfdx
-#           # use sf to login from auth url; create alias 'sandbox'
-#           sf org login sfdx-url --sfdx-url-file sandbox.sfdx --alias sandbox --set-default
-#           echo "Authenticated orgs:"
-#           sf org list --json
-
-#       - name: Authenticate DevHub (optional, ensures package commands work)
-#         # This logs your DevHub into the runner (used if you later want to create versions)
-#         run: |
-#           if [ -z "${{ secrets.SFDX_AUTH_URL_DEVHUB }}" ]; then
-#             echo "SFDX_AUTH_URL_DEVHUB secret is empty - skipping devhub login"
-#           else
-#             echo "${{ secrets.SFDX_AUTH_URL_DEVHUB }}" > devhub.sfdx
-#             sf org login sfdx-url --sfdx-url-file devhub.sfdx --alias devhub --set-default-dev-hub
-#             sf org display --target-org devhub --verbose || true
-#           fi
-
-#       - name: Install packaging plugin & show available commands
-#         run: |
-#           sf plugins install @salesforce/plugin-packaging || true
-#           sf plugins --core
-#           echo "package command help:"
-#           sf package --help || true
-
-#       - name: Debug show package id and sandbox alias
-#         run: |
-#           echo "PACKAGE_VERSION_ID = $PACKAGE_VERSION_ID"
-#           sf org list --json
-#           echo "Sandbox alias used: sandbox"
-
-#       - name: Validate (check-only) install
-#         run: |
-#           set -euo pipefail
-#           PKG="$PACKAGE_VERSION_ID"
-#           if [ -z "$PKG" ]; then
-#             echo "ERROR: PACKAGE_VERSION_ID is empty"; exit 1
-#           fi
-
-#           if [ -n "${{ secrets.PACKAGE_KEY }}" ]; then
-#             KEY_FLAG="--installation-key '${{ secrets.PACKAGE_KEY }}'"
-#             echo "Using PACKAGE_KEY secret for install"
-#           else
-#             KEY_FLAG="--installation-key-bypass"
-#             echo "No PACKAGE_KEY secret — using installation-key-bypass"
-#           fi
-
-#           echo "Running check-only install for package: $PKG into alias 'sandbox'"
-#           sf package version install \
-#             --package "$PKG" \
-#             --target-org sandbox \
-#             --check-only \
-#             --no-prompt \
-#             --wait 20 \
-#             --publish-wait 10 \
-#             $KEY_FLAG
-
-#   deploy:
-#     name: Install package into Sandbox
-#     runs-on: ubuntu-latest
-#     needs: validate
-#     steps:
-#       - name: Checkout repo
-#         uses: actions/checkout@v4
-
-#       - name: Install Salesforce CLI and show env
-#         run: |
-#           set -euxo pipefail
-
-#           echo "1) Install @salesforce/cli (npm global)"
-#           npm install --global @salesforce/cli
-
-#           echo "2) Show which sf is on PATH and version"
-#           which sf || true
-#           sf --version || true
-
-#           echo "3) Ensure no old sfdx is in PATH"
-#           which sfdx || true
-#           sfdx --version || true
-
-#           echo "4) Install packaging plugin (idempotent)"
-#           sf plugins install @salesforce/plugin-packaging || true
-
-#           echo "5) Show installed plugins and package help"
-#           sf plugins --core || true
-#           sf package --help || true
-
-#       - name: Authenticate Sandbox (SF CLI)
-#         run: |
-#           set -euxo pipefail
-#           echo "${{ secrets.SFDX_AUTH_URL_SANDBOX }}" > sandbox.sfdx
-#           # use sf to login from auth url; create alias 'sandbox'
-#           sf org login sfdx-url --sfdx-url-file sandbox.sfdx --alias sandbox --set-default
-#           echo "Authenticated orgs:"
-#           sf org list --json
-
-#       - name: Install packaging plugin
-#         run: |
-#           sf plugins install @salesforce/plugin-packaging || true
-#           sf plugins --core
-
-#       - name: Debug show package id and sandbox alias
-#         run: |
-#           echo "PACKAGE_VERSION_ID = $PACKAGE_VERSION_ID"
-#           sf org list --json
-
-#       - name: Install package (real)
-#         run: |
-#           set -euo pipefail
-#           PKG="$PACKAGE_VERSION_ID"
-#           if [ -z "$PKG" ]; then
-#             echo "ERROR: PACKAGE_VERSION_ID is empty"; exit 1
-#           fi
-
-#           if [ -n "${{ secrets.PACKAGE_KEY }}" ]; then
-#             KEY_FLAG="--installation-key '${{ secrets.PACKAGE_KEY }}'"
-#             echo "Using PACKAGE_KEY secret for install"
-#           else
-#             KEY_FLAG=""
-#             echo "No PACKAGE_KEY provided — installing without key"
-#           fi
-
-#           echo "Installing package $PKG into alias 'sandbox'"
-#           sf package version install \
-#             --package "$PKG" \
-#             --target-org sandbox \
-#             --no-prompt \
-#             --wait 20 \
-#             --publish-wait 10 \
-#             $KEY_FLAG
-
-#       - name: Confirm installed packages
-#         run: |
-#           echo "Installed packages in sandbox:"
-#           sf package installed list --target-org sandbox --json || true
+          sf package install \
+            --package "${{ needs.build-package.outputs.pkg_version }}" \
+            --target-org sandbox \
+            --no-prompt \
+            --wait 20
