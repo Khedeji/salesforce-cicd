@@ -37,12 +37,18 @@ jobs:
             --set-default-dev-hub
           sf org list
 
-      - name: Create Package Version in DevHub
+      - name: Create Package Version in DevHub (DEBUG)
         id: create_pkg
         run: |
           set -e
 
-          echo "Creating package version for ${PACKAGE_ALIAS} in DevHub"
+          echo "Checking DevHub status"
+          sf org display --target-org devhub
+
+          echo "Listing packages in DevHub"
+          sf package list --target-dev-hub devhub
+
+          echo "Creating package version for ${PACKAGE_ALIAS}"
 
           sf package version create \
             --package "$PACKAGE_ALIAS" \
@@ -61,7 +67,6 @@ jobs:
             exit 1
           fi
 
-          echo "Created package version: $PKG_ID"
           echo "pkg_version=$PKG_ID" >> $GITHUB_OUTPUT
 
   # --------------------------------------------------

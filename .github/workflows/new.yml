@@ -1,46 +1,46 @@
-name: Install Existing Package Version to Sandbox
+# name: Install Existing Package Version to Sandbox
 
-on:
-  workflow_dispatch:
-  push:
-    branches: [main]
+# on:
+#   workflow_dispatch:
+#   push:
+#     branches: [main]
 
-env:
-  PACKAGE_VERSION_ID: "04tf600000090OzAAI"
+# env:
+#   PACKAGE_VERSION_ID: "04tf600000090OzAAI"
 
-jobs:
-  install-to-sandbox:
-    runs-on: ubuntu-latest
+# jobs:
+#   install-to-sandbox:
+#     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v4
 
-      - name: Install Salesforce CLI
-        run: |
-          npm install --global @salesforce/cli
-          export PATH="$(npm bin -g):$PATH"
-          sf --version
+#       - name: Install Salesforce CLI
+#         run: |
+#           npm install --global @salesforce/cli
+#           export PATH="$(npm bin -g):$PATH"
+#           sf --version
 
-      - name: Authenticate Sandbox
-        run: |
-          echo "${{ secrets.SFDX_AUTH_URL_SANDBOX }}" > sandbox.sfdx
-          sf org login sfdx-url \
-            --sfdx-url-file sandbox.sfdx \
-            --alias sandbox \
-            --set-default
-          sf org list
+#       - name: Authenticate Sandbox
+#         run: |
+#           echo "${{ secrets.SFDX_AUTH_URL_SANDBOX }}" > sandbox.sfdx
+#           sf org login sfdx-url \
+#             --sfdx-url-file sandbox.sfdx \
+#             --alias sandbox \
+#             --set-default
+#           sf org list
 
-      - name: Install Package into Sandbox
-        run: |
-          echo "Installing package $PACKAGE_VERSION_ID into sandbox"
+#       - name: Install Package into Sandbox
+#         run: |
+#           echo "Installing package $PACKAGE_VERSION_ID into sandbox"
 
-          sf package install \
-            --package "$PACKAGE_VERSION_ID" \
-            --target-org sandbox \
-            --no-prompt \
-            --wait 20
+#           sf package install \
+#             --package "$PACKAGE_VERSION_ID" \
+#             --target-org sandbox \
+#             --no-prompt \
+#             --wait 20
 
-      - name: Confirm Installed Packages
-        run: |
-          sf package installed list --target-org sandbox
+#       - name: Confirm Installed Packages
+#         run: |
+#           sf package installed list --target-org sandbox
