@@ -31,22 +31,13 @@ jobs:
             --set-default
           sf org list
 
-      - name: Validate Package (check-only)
-        run: |
-          sf package install \
-            --package "$PACKAGE_VERSION_ID" \
-            --target-org sandbox \
-            --check-only \
-            --installation-key-bypass \
-            --no-prompt \
-            --wait 20
-
       - name: Install Package into Sandbox
         run: |
+          echo "Installing package $PACKAGE_VERSION_ID into sandbox"
+
           sf package install \
             --package "$PACKAGE_VERSION_ID" \
             --target-org sandbox \
-            --installation-key-bypass \
             --no-prompt \
             --wait 20
 
