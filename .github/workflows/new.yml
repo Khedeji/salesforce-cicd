@@ -16,55 +16,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # 1️⃣ Install SF CLI (npm) and FORCE PATH
-      - name: Install Salesforce CLI (sf)
-        shell: bash
+      - name: Install Salesforce CLI
         run: |
-          set -euxo pipefail
-
           npm install --global @salesforce/cli
           export PATH="$(npm bin -g):$PATH"
-
-          echo "Using sf at:"
-          which sf
           sf --version
 
-      # 2️⃣ Authenticate Sandbox (NO sfdx-actions)
       - name: Authenticate Sandbox
-        shell: bash
         run: |
-          set -euxo pipefail
-
           echo "${{ secrets.SFDX_AUTH_URL_SANDBOX }}" > sandbox.sfdx
           sf org login sfdx-url \
             --sfdx-url-file sandbox.sfdx \
             --alias sandbox \
             --set-default
-
           sf org list
 
-      # 3️⃣ Install Packaging Plugin (MANDATORY)
-      - name: Install Packaging Plugin
-        shell: bash
-        run: |
-          set -euxo pipefail
-
-          sf plugins install @salesforce/plugin-packaging
-          sf plugins --core
-
-          echo "Verify package commands:"
-          sf package --help
-          sf package version --help
-
-      # 4️⃣ Validate (check-only)
       - name: Validate Package (check-only)
-        shell: bash
         run: |
-          set -euxo pipefail
-
-          echo "Validating package $PACKAGE_VERSION_ID in sandbox"
-
-          sf package version install \
+          sf package install \
             --package "$PACKAGE_VERSION_ID" \
             --target-org sandbox \
             --check-only \
@@ -72,25 +41,15 @@ jobs:
             --no-prompt \
             --wait 20
 
-      # 5️⃣ Install Package
       - name: Install Package into Sandbox
-        shell: bash
         run: |
-          set -euxo pipefail
-
-          echo "Installing package $PACKAGE_VERSION_ID into sandbox"
-
-          sf package version install \
+          sf package install \
             --package "$PACKAGE_VERSION_ID" \
             --target-org sandbox \
             --installation-key-bypass \
             --no-prompt \
             --wait 20
 
-      # 6️⃣ Confirm Installation
       - name: Confirm Installed Packages
-        shell: bash
         run: |
-          set -euxo pipefail
-
           sf package installed list --target-org sandbox
