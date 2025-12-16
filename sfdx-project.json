@@ -4,7 +4,7 @@
       "versionName": "ver 0.1",
       "versionNumber": "0.1.0.NEXT",
       "path": "force-app",
-      "default": true,
+      "default": false,
       "package": "MyApp",
       "versionDescription": ""
     }
@@ -14,6 +14,6 @@
   "sfdcLoginUrl": "https://login.salesforce.com",
   "sourceApiVersion": "62.0",
   "packageAliases": {
-    "MyApp": "0Hof600000004oPCAQ"
+    "MyApp": "0Hod20000000VAHCA2"
   }
 }
