@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Purpose_of_Loan__c</fullName>
+    <label>Purpose of Loan</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Car Expenses</fullName>
+                <default>false</default>
+                <label>Car Expenses</label>
+            </value>
+            <value>
+                <fullName>Experiences &amp; Life Events</fullName>
+                <default>false</default>
+                <label>Experiences &amp; Life Events</label>
+            </value>
+            <value>
+                <fullName>Furniture or Appliances</fullName>
+                <default>false</default>
+                <label>Furniture or Appliances</label>
+            </value>
+            <value>
+                <fullName>Home and Relocation Expenses</fullName>
+                <default>false</default>
+                <label>Home and Relocation Expenses</label>
+            </value>
+            <value>
+                <fullName>Insurance</fullName>
+                <default>false</default>
+                <label>Insurance</label>
+            </value>
+            <value>
+                <fullName>Lifestyle, Bills &amp; Expenses</fullName>
+                <default>false</default>
+                <label>Lifestyle, Bills &amp; Expenses</label>
+            </value>
+            <value>
+                <fullName>Medical Expenses</fullName>
+                <default>false</default>
+                <label>Medical Expenses</label>
+            </value>
+            <value>
+                <fullName>Other Expenses</fullName>
+                <default>false</default>
+                <label>Other Expenses</label>
+            </value>
+            <value>
+                <fullName>Repay Existing Debt</fullName>
+                <default>false</default>
+                <label>Repay Existing Debt</label>
+            </value>
+            <value>
+                <fullName>School / Education / Work</fullName>
+                <default>false</default>
+                <label>School / Education / Work</label>
+            </value>
+            <value>
+                <fullName>Travel Expenses</fullName>
+                <default>false</default>
+                <label>Travel Expenses</label>
+            </value>
+            <value>
+                <fullName>Veterinary Expenses</fullName>
+                <default>false</default>
+                <label>Veterinary Expenses</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

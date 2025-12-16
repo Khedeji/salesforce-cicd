@@ -1,0 +1,575 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Asset_Type__c</fullName>
+    <description>The Asset name which borrower wanted to buy.</description>
+    <label>Asset Type</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>ACCESS EQUIPMENT (BOOM/SCISSOR LIFTS)</fullName>
+                <default>false</default>
+                <label>ACCESS EQUIPMENT (BOOM/SCISSOR LIFTS)</label>
+            </value>
+            <value>
+                <fullName>AGRICULTURAL FEED BIN</fullName>
+                <default>false</default>
+                <label>AGRICULTURAL FEED BIN</label>
+            </value>
+            <value>
+                <fullName>AGRICULTURAL MACHINERY AND EQUIPMENT</fullName>
+                <default>false</default>
+                <label>AGRICULTURAL MACHINERY AND EQUIPMENT</label>
+            </value>
+            <value>
+                <fullName>ARTWORK</fullName>
+                <default>false</default>
+                <label>ARTWORK</label>
+            </value>
+            <value>
+                <fullName>ATTACHMENTS FOR EARTHMOVING</fullName>
+                <default>false</default>
+                <label>ATTACHMENTS FOR EARTHMOVING</label>
+            </value>
+            <value>
+                <fullName>ATTACHMENTS FOR EARTHMOVING MACHINERY</fullName>
+                <default>false</default>
+                <label>ATTACHMENTS FOR EARTHMOVING MACHINERY</label>
+            </value>
+            <value>
+                <fullName>ATV</fullName>
+                <default>false</default>
+                <label>ATV</label>
+            </value>
+            <value>
+                <fullName>AUDIO VISUAL</fullName>
+                <default>false</default>
+                <label>AUDIO VISUAL</label>
+            </value>
+            <value>
+                <fullName>BUSES AND COACHES</fullName>
+                <default>false</default>
+                <label>BUSES AND COACHES</label>
+            </value>
+            <value>
+                <fullName>CAMPER VANS</fullName>
+                <default>false</default>
+                <label>CAMPER VANS</label>
+            </value>
+            <value>
+                <fullName>CARAVANS</fullName>
+                <default>false</default>
+                <label>CARAVANS</label>
+            </value>
+            <value>
+                <fullName>CLASSIC CARS (LOADINGS APPLY)</fullName>
+                <default>false</default>
+                <label>CLASSIC CARS (LOADINGS APPLY)</label>
+            </value>
+            <value>
+                <fullName>CNC</fullName>
+                <default>false</default>
+                <label>CNC</label>
+            </value>
+            <value>
+                <fullName>CNC MACHINES</fullName>
+                <default>false</default>
+                <label>CNC MACHINES</label>
+            </value>
+            <value>
+                <fullName>COFFEE MACHINES</fullName>
+                <default>false</default>
+                <label>COFFEE MACHINES</label>
+            </value>
+            <value>
+                <fullName>COMMERCIAL MOTOR VEHICLES (UTES, VANS AND 4WDS)</fullName>
+                <default>false</default>
+                <label>COMMERCIAL MOTOR VEHICLES (UTES, VANS AND 4WDS)</label>
+            </value>
+            <value>
+                <fullName>COMPRESSORS</fullName>
+                <default>false</default>
+                <label>COMPRESSORS</label>
+            </value>
+            <value>
+                <fullName>COMPUTER EQUIPMENT</fullName>
+                <default>false</default>
+                <label>COMPUTER EQUIPMENT</label>
+            </value>
+            <value>
+                <fullName>CONCRETE CUTTERS</fullName>
+                <default>false</default>
+                <label>CONCRETE CUTTERS</label>
+            </value>
+            <value>
+                <fullName>CONSTRUCTION AND EARTH MOVING EQUIPMENT</fullName>
+                <default>false</default>
+                <label>CONSTRUCTION AND EARTH MOVING EQUIPMENT</label>
+            </value>
+            <value>
+                <fullName>CONSTRUCTION AND EARTH MOVING EQUIPMENT (NON-MINING)</fullName>
+                <default>false</default>
+                <label>CONSTRUCTION AND EARTH MOVING EQUIPMENT (NON-MINING)</label>
+            </value>
+            <value>
+                <fullName>CONSTRUCTION EQUIPMENT (NON WHEELED &amp; NON TRACKED) ATTACHMENTS TO PRIMARY ASSETS</fullName>
+                <default>false</default>
+                <label>CONSTRUCTION EQUIPMENT (NON WHEELED &amp; NON TRACKED) ATTACHMENTS TO PRIMARY ASSETS</label>
+            </value>
+            <value>
+                <fullName>CONVEYORS</fullName>
+                <default>false</default>
+                <label>CONVEYORS</label>
+            </value>
+            <value>
+                <fullName>COOL ROOMS AND SPRAY BOOTHS</fullName>
+                <default>false</default>
+                <label>COOL ROOMS AND SPRAY BOOTHS</label>
+            </value>
+            <value>
+                <fullName>DEMOUNTABLES AND SHIPPING CONTAINERS</fullName>
+                <default>false</default>
+                <label>DEMOUNTABLES AND SHIPPING CONTAINERS</label>
+            </value>
+            <value>
+                <fullName>DETACHABLE GPS UNITS</fullName>
+                <default>false</default>
+                <label>DETACHABLE GPS UNITS</label>
+            </value>
+            <value>
+                <fullName>EDGE BENDERS</fullName>
+                <default>false</default>
+                <label>EDGE BENDERS</label>
+            </value>
+            <value>
+                <fullName>ELECTRIC OR MOTOR VEHICLE USED FOR HIRE/RENTAL PURPOSES</fullName>
+                <default>false</default>
+                <label>ELECTRIC OR MOTOR VEHICLE USED FOR HIRE/RENTAL PURPOSES</label>
+            </value>
+            <value>
+                <fullName>ENGINEERING AND TOOLMAKING</fullName>
+                <default>false</default>
+                <label>ENGINEERING AND TOOLMAKING</label>
+            </value>
+            <value>
+                <fullName>ENGINEERING AND TOOLMAKING EQUIPMENT</fullName>
+                <default>false</default>
+                <label>ENGINEERING AND TOOLMAKING EQUIPMENT</label>
+            </value>
+            <value>
+                <fullName>ENGINEERING EQUIPMENT</fullName>
+                <default>false</default>
+                <label>ENGINEERING EQUIPMENT</label>
+            </value>
+            <value>
+                <fullName>EVS</fullName>
+                <default>false</default>
+                <label>EVS</label>
+            </value>
+            <value>
+                <fullName>FARMING AND AGRICULTURE</fullName>
+                <default>false</default>
+                <label>FARMING AND AGRICULTURE</label>
+            </value>
+            <value>
+                <fullName>FIXTURES AND FITTINGS</fullName>
+                <default>false</default>
+                <label>FIXTURES AND FITTINGS</label>
+            </value>
+            <value>
+                <fullName>FOOD MANUFACTURING EQUIPMENT</fullName>
+                <default>false</default>
+                <label>FOOD MANUFACTURING EQUIPMENT</label>
+            </value>
+            <value>
+                <fullName>FOOD TRUCKS</fullName>
+                <default>false</default>
+                <label>FOOD TRUCKS</label>
+            </value>
+            <value>
+                <fullName>FORESTRY MACHINERY AND EQUIPMENT</fullName>
+                <default>false</default>
+                <label>FORESTRY MACHINERY AND EQUIPMENT</label>
+            </value>
+            <value>
+                <fullName>GENERATORS</fullName>
+                <default>false</default>
+                <label>GENERATORS</label>
+            </value>
+            <value>
+                <fullName>GENERATORS AND COMPRESSORS</fullName>
+                <default>false</default>
+                <label>GENERATORS AND COMPRESSORS</label>
+            </value>
+            <value>
+                <fullName>GPS EQUIPMENT</fullName>
+                <default>false</default>
+                <label>GPS EQUIPMENT</label>
+            </value>
+            <value>
+                <fullName>GYM EQUIPMENT</fullName>
+                <default>false</default>
+                <label>GYM EQUIPMENT</label>
+            </value>
+            <value>
+                <fullName>HEAVY TRUCKS &gt;3.5 TONNES</fullName>
+                <default>false</default>
+                <label>HEAVY TRUCKS &gt;3.5 TONNES</label>
+            </value>
+            <value>
+                <fullName>HEAVY TRUCKS &gt;4.5T GVM</fullName>
+                <default>false</default>
+                <label>HEAVY TRUCKS &gt;4.5T GVM</label>
+            </value>
+            <value>
+                <fullName>HIRE CARS / LIMOUSINES</fullName>
+                <default>false</default>
+                <label>HIRE CARS / LIMOUSINES</label>
+            </value>
+            <value>
+                <fullName>HOISTS</fullName>
+                <default>false</default>
+                <label>HOISTS</label>
+            </value>
+            <value>
+                <fullName>HOSPITALITY EQUIPMENT</fullName>
+                <default>false</default>
+                <label>HOSPITALITY EQUIPMENT</label>
+            </value>
+            <value>
+                <fullName>INDUSTRIAL PRINTERS</fullName>
+                <default>false</default>
+                <label>INDUSTRIAL PRINTERS</label>
+            </value>
+            <value>
+                <fullName>INTANGIBLE ASSETS</fullName>
+                <default>false</default>
+                <label>INTANGIBLE ASSETS</label>
+            </value>
+            <value>
+                <fullName>IT HARDWARE</fullName>
+                <default>false</default>
+                <label>IT HARDWARE</label>
+            </value>
+            <value>
+                <fullName>LANDSCAPING AND GROUNDKEEPING</fullName>
+                <default>false</default>
+                <label>LANDSCAPING AND GROUNDKEEPING</label>
+            </value>
+            <value>
+                <fullName>LATHES</fullName>
+                <default>false</default>
+                <label>LATHES</label>
+            </value>
+            <value>
+                <fullName>LED LIGHTING</fullName>
+                <default>false</default>
+                <label>LED LIGHTING</label>
+            </value>
+            <value>
+                <fullName>LIGHT COMMERCIAL VEHICLES (VAN, UTES)</fullName>
+                <default>false</default>
+                <label>LIGHT COMMERCIAL VEHICLES (VAN, UTES)</label>
+            </value>
+            <value>
+                <fullName>LIGHT TRUCKS</fullName>
+                <default>false</default>
+                <label>LIGHT TRUCKS</label>
+            </value>
+            <value>
+                <fullName>LIGHT TRUCKS &lt;3.5 TONNES</fullName>
+                <default>false</default>
+                <label>LIGHT TRUCKS &lt;3.5 TONNES</label>
+            </value>
+            <value>
+                <fullName>LIVESTOCK</fullName>
+                <default>false</default>
+                <label>LIVESTOCK</label>
+            </value>
+            <value>
+                <fullName>MATERIALS HANDLING/FORKLIFTS</fullName>
+                <default>false</default>
+                <label>MATERIALS HANDLING/FORKLIFTS</label>
+            </value>
+            <value>
+                <fullName>MATERIALS HANDLING AND ACCESS EQUIPMENT</fullName>
+                <default>false</default>
+                <label>MATERIALS HANDLING AND ACCESS EQUIPMENT</label>
+            </value>
+            <value>
+                <fullName>MECHANICAL EQUIPMENT</fullName>
+                <default>false</default>
+                <label>MECHANICAL EQUIPMENT</label>
+            </value>
+            <value>
+                <fullName>MECHANICAL WORKSHOP EQUIPMENT</fullName>
+                <default>false</default>
+                <label>MECHANICAL WORKSHOP EQUIPMENT</label>
+            </value>
+            <value>
+                <fullName>MEDICAL/DENTAL/LABORATORY EQUIPMENT</fullName>
+                <default>false</default>
+                <label>MEDICAL/DENTAL/LABORATORY EQUIPMENT</label>
+            </value>
+            <value>
+                <fullName>MEDICAL AND DENTAL EQUIPMENT</fullName>
+                <default>false</default>
+                <label>MEDICAL AND DENTAL EQUIPMENT</label>
+            </value>
+            <value>
+                <fullName>MEDICAL EQUIPMENT</fullName>
+                <default>false</default>
+                <label>MEDICAL EQUIPMENT</label>
+            </value>
+            <value>
+                <fullName>MEDICAL LASERS</fullName>
+                <default>false</default>
+                <label>MEDICAL LASERS</label>
+            </value>
+            <value>
+                <fullName>MINING EQUIPMENT</fullName>
+                <default>false</default>
+                <label>MINING EQUIPMENT</label>
+            </value>
+            <value>
+                <fullName>MOTORBIKES</fullName>
+                <default>false</default>
+                <label>MOTORBIKES</label>
+            </value>
+            <value>
+                <fullName>MOTORHOMES</fullName>
+                <default>false</default>
+                <label>MOTORHOMES</label>
+            </value>
+            <value>
+                <fullName>MOTOR VEHICLES</fullName>
+                <default>false</default>
+                <label>MOTOR VEHICLES</label>
+            </value>
+            <value>
+                <fullName>MOVEABLE SILOS</fullName>
+                <default>false</default>
+                <label>MOVEABLE SILOS</label>
+            </value>
+            <value>
+                <fullName>NON FIXED WATER AND DIESEL TANKS</fullName>
+                <default>false</default>
+                <label>NON FIXED WATER AND DIESEL TANKS</label>
+            </value>
+            <value>
+                <fullName>OFFICE EQUIPMENT</fullName>
+                <default>false</default>
+                <label>OFFICE EQUIPMENT</label>
+            </value>
+            <value>
+                <fullName>OFFICE FURNITURE</fullName>
+                <default>false</default>
+                <label>OFFICE FURNITURE</label>
+            </value>
+            <value>
+                <fullName>OFFROAD BIKES AND OTHER GOODS</fullName>
+                <default>false</default>
+                <label>OFFROAD BIKES AND OTHER GOODS</label>
+            </value>
+            <value>
+                <fullName>PASSENGER CARS</fullName>
+                <default>false</default>
+                <label>PASSENGER CARS</label>
+            </value>
+            <value>
+                <fullName>PASSENGER VEHICLES</fullName>
+                <default>false</default>
+                <label>PASSENGER VEHICLES</label>
+            </value>
+            <value>
+                <fullName>PHOTOCOPIERS</fullName>
+                <default>false</default>
+                <label>PHOTOCOPIERS</label>
+            </value>
+            <value>
+                <fullName>PLANT SERVICES (COMPRESSORS AND GENERATORS)</fullName>
+                <default>false</default>
+                <label>PLANT SERVICES (COMPRESSORS AND GENERATORS)</label>
+            </value>
+            <value>
+                <fullName>POINT OF SALE EQUIPMENT</fullName>
+                <default>false</default>
+                <label>POINT OF SALE EQUIPMENT</label>
+            </value>
+            <value>
+                <fullName>PORTA-LOO</fullName>
+                <default>false</default>
+                <label>PORTA-LOO</label>
+            </value>
+            <value>
+                <fullName>PRESS BRAKES</fullName>
+                <default>false</default>
+                <label>PRESS BRAKES</label>
+            </value>
+            <value>
+                <fullName>PRIMARY ASSETS</fullName>
+                <default>false</default>
+                <label>PRIMARY ASSETS</label>
+            </value>
+            <value>
+                <fullName>PRIME MOVERS</fullName>
+                <default>false</default>
+                <label>PRIME MOVERS</label>
+            </value>
+            <value>
+                <fullName>PRIME MOVERS (LOADINGS APPLY)</fullName>
+                <default>false</default>
+                <label>PRIME MOVERS (LOADINGS APPLY)</label>
+            </value>
+            <value>
+                <fullName>PRINTING AND PACKING EQUIPMENT</fullName>
+                <default>false</default>
+                <label>PRINTING AND PACKING EQUIPMENT</label>
+            </value>
+            <value>
+                <fullName>RACING CARS</fullName>
+                <default>false</default>
+                <label>RACING CARS</label>
+            </value>
+            <value>
+                <fullName>RACKING</fullName>
+                <default>false</default>
+                <label>RACKING</label>
+            </value>
+            <value>
+                <fullName>RACKING AND TEMPORARY FENCING</fullName>
+                <default>false</default>
+                <label>RACKING AND TEMPORARY FENCING</label>
+            </value>
+            <value>
+                <fullName>REFRIGERATION</fullName>
+                <default>false</default>
+                <label>REFRIGERATION</label>
+            </value>
+            <value>
+                <fullName>RIDESHARE</fullName>
+                <default>false</default>
+                <label>RIDESHARE</label>
+            </value>
+            <value>
+                <fullName>RIDE SHARE</fullName>
+                <default>false</default>
+                <label>RIDE SHARE</label>
+            </value>
+            <value>
+                <fullName>ROAD MARKING EQUIPMENT</fullName>
+                <default>false</default>
+                <label>ROAD MARKING EQUIPMENT</label>
+            </value>
+            <value>
+                <fullName>SCAFFOLDING</fullName>
+                <default>false</default>
+                <label>SCAFFOLDING</label>
+            </value>
+            <value>
+                <fullName>SHIPPING CONTAINERS</fullName>
+                <default>false</default>
+                <label>SHIPPING CONTAINERS</label>
+            </value>
+            <value>
+                <fullName>SKIP BINS</fullName>
+                <default>false</default>
+                <label>SKIP BINS</label>
+            </value>
+            <value>
+                <fullName>SMALL YELLOW GOODS AND EXCAVATORS</fullName>
+                <default>false</default>
+                <label>SMALL YELLOW GOODS AND EXCAVATORS</label>
+            </value>
+            <value>
+                <fullName>SOFTWARE</fullName>
+                <default>false</default>
+                <label>SOFTWARE</label>
+            </value>
+            <value>
+                <fullName>SOLAR &amp; RENEWABLE ENERGY ASSETS</fullName>
+                <default>false</default>
+                <label>SOLAR &amp; RENEWABLE ENERGY ASSETS</label>
+            </value>
+            <value>
+                <fullName>SPECIALISED FOOD TRUCKS</fullName>
+                <default>false</default>
+                <label>SPECIALISED FOOD TRUCKS</label>
+            </value>
+            <value>
+                <fullName>SURVEYING EQUIPMENT</fullName>
+                <default>false</default>
+                <label>SURVEYING EQUIPMENT</label>
+            </value>
+            <value>
+                <fullName>SUVS</fullName>
+                <default>false</default>
+                <label>SUVS</label>
+            </value>
+            <value>
+                <fullName>TAXI</fullName>
+                <default>false</default>
+                <label>TAXI</label>
+            </value>
+            <value>
+                <fullName>TAXIS AND REPAIRABLE WRITEOFFS</fullName>
+                <default>false</default>
+                <label>TAXIS AND REPAIRABLE WRITEOFFS</label>
+            </value>
+            <value>
+                <fullName>TELEPHONE SYSTEMS (HARDWARE ONLY)</fullName>
+                <default>false</default>
+                <label>TELEPHONE SYSTEMS (HARDWARE ONLY)</label>
+            </value>
+            <value>
+                <fullName>TESTING AND CALIBRATION EQUIPMENT</fullName>
+                <default>false</default>
+                <label>TESTING AND CALIBRATION EQUIPMENT</label>
+            </value>
+            <value>
+                <fullName>TRADE TOOLS</fullName>
+                <default>false</default>
+                <label>TRADE TOOLS</label>
+            </value>
+            <value>
+                <fullName>TRAILERS</fullName>
+                <default>false</default>
+                <label>TRAILERS</label>
+            </value>
+            <value>
+                <fullName>TRUCKS</fullName>
+                <default>false</default>
+                <label>TRUCKS</label>
+            </value>
+            <value>
+                <fullName>UBER</fullName>
+                <default>false</default>
+                <label>UBER</label>
+            </value>
+            <value>
+                <fullName>VENDING AND GAMING MACHINES</fullName>
+                <default>false</default>
+                <label>VENDING AND GAMING MACHINES</label>
+            </value>
+            <value>
+                <fullName>VENDING MACHINES</fullName>
+                <default>false</default>
+                <label>VENDING MACHINES</label>
+            </value>
+            <value>
+                <fullName>WINE AND BEER INDUSTRY PROCESSING</fullName>
+                <default>false</default>
+                <label>WINE AND BEER INDUSTRY PROCESSING</label>
+            </value>
+            <value>
+                <fullName>WOODWORKING AND METALWORKING EQUIPMENT</fullName>
+                <default>false</default>
+                <label>WOODWORKING AND METALWORKING EQUIPMENT</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

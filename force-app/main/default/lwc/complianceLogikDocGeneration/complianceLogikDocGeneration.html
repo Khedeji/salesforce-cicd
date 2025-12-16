@@ -1,0 +1,89 @@
+<template>
+    <lightning-card icon-name="utility:cases" title="Compliance Logik™">
+        <lightning-button-icon icon-name="utility:refresh" onclick={gettingLeadsLogik} class="slds-m-right_large" alternative-text="Refresh" title="Refresh" style="float: right; margin-top: -39px;"></lightning-button-icon>
+        
+        <template if:true={error}>
+            <p style="color:red">{errorMsg}</p>
+        </template>
+
+        <template if:true={plans}>
+            <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                <tbody>
+                    <!-- Adding key for each top-level plan -->
+                    <template for:each={plans} for:item="plan">
+                        <tr key={plan.name}> <!-- Use a unique key based on the plan name -->
+                            <td>
+                                <lightning-button-icon icon-name={plan.icon} onclick={toggleComplianceRules} data-id={plan.name} class="slds-m-right_x-small" alternative-text="Toggle" title="Toggle"></lightning-button-icon>
+                                <span class="slds-truncate">
+                                    {plan.name}
+                                </span>
+                            </td>
+                        </tr>
+                        <template if:true={plan.expanded}>
+                            <tr key={plan.name}> <!-- Use a different key for the expanded row -->
+                                <td>
+                                    <table class="slds-table slds-table_cell-buffer innertable-add-margin">
+                                        <tbody>
+                                            <!-- Adding key for each nested item -->
+                                            <template for:each={plan.Compliance_Items} for:item="compliance_item">
+                                                <tr key={compliance_item.name}  > <!-- Use a unique key based on the item name -->
+                                                    <td> 
+                                                        <div class="slds-truncate">
+                                                            <lightning-button-icon icon-name={compliance_item.icon} onclick={togglePlans} data-id={compliance_item.name}  name={plan.name} class="slds-m-right_x-small" alternative-text="Toggle" title="Toggle"></lightning-button-icon>
+                                                            <lightning-icon size="x-small" icon-name="action:approval" alternative-text="Success" class="slds-m-right_x-small"></lightning-icon>
+                                                            <span class="slds-truncate">
+                                                                {compliance_item.name} 
+                                                            </span>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <template if:true={compliance_item.expanded}>
+                                                <tr key={compliance_item.name}>
+                                                    <td>
+                                                        <table class="slds-table slds-table_cell-buffer innertable-add-margin">
+                                                            <tbody>
+                                                                <template for:each={compliance_item.fields} for:item="compliance_item_field">
+                                                                    <tr key={compliance_item_field.name}>
+                                                                        <td> 
+                                                                            <template lwc:if={compliance_item_field.Return_result}>
+                                                                                <lightning-icon icon-name="action:approval" size="x-small" alternative-text="Success" class="slds-m-right_x-small"></lightning-icon>
+                                                                            </template>
+                                                                            <template lwc:else>
+                                                                                <lightning-icon icon-name="action:close"  size="x-small"  alternative-text="Success" class="slds-m-right_x-small"></lightning-icon>
+                                                                            </template>
+                                                                            <span class="slds-truncate">
+                                                                                {compliance_item_field.name}
+                                                                            </span>
+                                                                        </td> 
+                                                                        <td>
+                                                                            <template if:true={compliance_item_field.DOC_URL}>
+                                                                                <a class="doc-icon-position" target="_blank" href={compliance_item_field.DOC_URL} > <lightning-icon  icon-name="doctype:gdoc" alternative-text="Success" class="slds-m-right_x-small"></lightning-icon>  </a>
+                                                                            </template>
+                                                                    </td>
+                                                                    </tr>
+                                                                </template>
+                                                            </tbody>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                                </template>
+                                            </template>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </template>
+                    </template>
+                </tbody>
+            </table>
+        </template>
+
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+        </template>
+
+        <h1 style="text-align: right; color:#A3A3A3; font-size:12px; margin: 15px 30px 10px;">
+            <i>AI Powered by <img class="lendingLogikLogo" src={lendingLogikLogo} alt="LendingLogik"></i>
+        </h1>
+    </lightning-card>
+</template>

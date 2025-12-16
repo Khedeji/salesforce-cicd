@@ -1,0 +1,38 @@
+<template>
+
+    <lightning-card icon-name={lendingLogikLogo} title="Loan Analysis by LendingLogik vikas Khede">
+        <lightning-button-icon icon-name="utility:refresh" onclick={runAnalysis} class="slds-m-right_large" alternative-text="Refresh" title="Refresh" style="float: right; margin-top: -25px;"></lightning-button-icon>
+        <p style="color:red">{errorMsg}</p>
+        <br/>
+        <p class="flynx-txt">Credit Decision Logik™ is <span class={confidenceClass}>{confidenceMeasure}% confident </span> on this  Prediction</p>
+        <lightning-layout class="slds-align_absolute-center">
+            <div>
+                <img class="signal" src={redSignalUrl}>
+                <div class="infoIcon">
+                    <lightning-icon icon-name="utility:info_alt" alternative-text="Red" size="x-small"></lightning-icon>
+                    <div class="info"><span class="infotext">Not recommended for loan</span></div>
+                </div>
+            </div>
+            <!-- <div>
+                <img class="signal" src={yellowSignalUrl}>
+                <div class="infoIcon">
+                    <lightning-icon icon-name="utility:info_alt" alternative-text="Yellow" size="x-small"></lightning-icon>
+                    <div class="info"><span class="infotext">Giving loan might be risky</span></div> 
+                </div>
+            </div> -->
+            <div>
+                <img class="signal" src={greenSignalUrl}>
+                <div class="infoIcon">
+                    <lightning-icon icon-name="utility:info_alt" alternative-text="Green" size="x-small"></lightning-icon>
+                    <div class="info"><span class="infotext">Good to provide loan</span></div>
+                </div>
+            </div>
+        </lightning-layout>
+        
+        
+        <h1 style="text-align: right; color:#A3A3A3; font-size:12px; margin: 15px 30px 10px;"><i>AI Powered by <img class="lendingLogikLogo" src={lendingLogikLogo} alt="LendingLogik"><div class="info"><span class="infotext" style="margin-left: -150px;">It is AI Generated result and can vary.</span></div></i></h1>
+    
+        <lightning-spinner alternative-text="Loading" size="small" if:true={isLoading}></lightning-spinner>
+    </lightning-card>
+
+</template>

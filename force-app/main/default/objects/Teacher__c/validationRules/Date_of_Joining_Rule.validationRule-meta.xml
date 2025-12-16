@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Date_of_Joining_Rule</fullName>
+    <active>true</active>
+    <errorConditionFormula>OR(WEEKDAY( Date_Of_Joining__c ) = 1,WEEKDAY( Date_Of_Joining__c ) = 7)</errorConditionFormula>
+    <errorDisplayField>Date_Of_Joining__c</errorDisplayField>
+    <errorMessage>Date of Joining can&apos;t be on Weekend</errorMessage>
+</ValidationRule>

@@ -1,0 +1,18 @@
+<template>
+    <div class="chatbot-fab" onclick={toggleChat}>
+        <span class="chatbot-icon">💬</span>
+    </div>
+    <template if:true={isOpen}>
+        <div class="chatbot-window">
+            <div class="chatbot-header">
+                <span>AI Assistant</span>
+                <button class="close-btn" onclick={toggleChat}>×</button>
+            </div>
+            <div class="chatbot-messages" lwc:dom="manual" id="messages"></div>
+            <div class="chatbot-input">
+                <input type="text" placeholder="Ask me anything..." value={userInput} oninput={handleInput} onkeydown={handleKeyDown}/>
+                <button onclick={sendMessage}>Send</button>
+            </div>
+        </div>
+    </template>
+</template>

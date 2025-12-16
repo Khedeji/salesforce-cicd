@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Discount_by_Opp_Tier__c</fullName>
+    <formula>CASE(
+  TEXT( Opportunity_Tier__c ),
+  &apos;T1&apos;,0.10,
+  &apos;T2&apos;,0.20,
+  &apos;T3&apos;,0.30,
+  &apos;T4&apos;,0.40,
+  &apos;T5&apos;,0.50,
+   0
+  
+
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Discount by Opp Tier</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackTrending>false</trackTrending>
+    <type>Percent</type>
+</CustomField>

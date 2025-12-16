@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DP_Days_in_Overdrawn_For_Period__c</fullName>
+    <description>Days (in %) Overdrawn For Period</description>
+    <externalId>false</externalId>
+    <label>Days (in %) Overdrawn For Period</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>4</scale>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

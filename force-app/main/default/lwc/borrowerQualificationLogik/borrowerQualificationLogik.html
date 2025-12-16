@@ -1,0 +1,119 @@
+<template>
+    <lightning-card icon-name="utility:cases" title="Borrower Qualification Logik">
+        <template if:true={responseLenders}>
+            <lightning-button-icon icon-name="utility:refresh" onclick={createMappingbetweenLeandsAndLenders} class="slds-m-right_large"
+                alternative-text="Refresh" title="Refresh" style="float: right; margin-top: -25px;"></lightning-button-icon>
+        </template>
+        <p style="color:red">{errorMsg}</p>
+        <br />
+
+        <!-- Start bear list -->
+        <template if:true={responseLenders}>
+            <div class="scrollable-table-container">
+                <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                    <thead>
+                        <tr>
+
+                            <th scope="col">
+                                <div class="slds-truncate" title="Lender Name">Eligible Lender</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="Eligible Plan">Eligible Plan</div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={responseLenders} for:item="LenderPlan">
+
+                            <tr key={LenderPlan.Id}>
+                                <td data-label="Lender Name">
+
+                                    <lightning-button-icon style=" position: absolute; left: 10px; bottom: 6px;"
+                                        icon-name="utility:add" alternative-text="Add" title="Add"
+                                        onclick={handleShowButtonClick} name={LenderPlan.Id} data-id={LenderPlan.ShowHideBtn}>
+                                    </lightning-button-icon>
+
+                                    <div class="slds-truncate" style=" padding-left: 45px;" title="Lender 1"> {LenderPlan.Eligible_Lender}</div>
+                                </td>
+                                <td data-label="Eligible Plan">
+                                    <div class="slds-truncate" title="Plan A">{LenderPlan.Eligible_Plan}</div>
+                                </td>
+                            </tr>
+                            <tr key={LenderPlan.Id} data-id={LenderPlan.RowId} style="display: none;">
+
+                                <td  >
+                                    <div style="max-width: 70%; margin: 0 auto">
+                                     
+                                            <lightning-card variant="Narrow" title="Credit Score" icon-name="custom:custom17">
+                                                <div class="slds-card__body slds-card__body_inner">
+                                                    <!-- Gauge.js uses HTML canvas element to create charts so here is one -->
+                                                    
+                                                    <canvas style="width:90%" data-id={LenderPlan.CreditChart} ></canvas>
+                                                    
+                                                    <!-- Element to show the current Gauge value  -->
+                                                    <div class="slds-text-heading_large slds-text-align_center">
+                                                        <span >{LenderPlan.CreditScore} </span>
+                                                    </div>
+                                                </div>
+                                            </lightning-card>
+                                    </div>
+                                </td>
+                                <td>
+                                        <div style="max-width: 70%;margin: 0 auto">
+                                            <lightning-card title="Debt-to-Income Ratio" icon-name="custom:custom14">
+                                                <div class="slds-card__body slds-card__body_inner" style="padding: 65px 50px;">
+                                                    <!-- Linear gauge with colored zones -->
+                                                    <div class="gauge-container" data-id={LenderPlan.DebtIncomeRatioScale}>
+                                                        <div class="gauge-bar yellow-zone"></div>
+                                                        <div class="gauge-bar green-zone"></div>
+                                                        <div class="gauge-bar yellow-zone"></div>
+                                                        <div class="gauge-pointer" data-id={LenderPlan.DebtIncomeRatioPointer}></div>
+                                                    </div>
+                                                    
+                                                    <!-- Scale labels below the gauge -->
+                                                    <div class="gauge-labels" data-id={LenderPlan.DebtIncomeRatioLabel}>
+                                                        <span class="label">0%</span>
+                                                        <span class="label">30%</span>
+                                                        <span class="label">60%</span>
+                                                        <span class="label">100%</span>
+                                                    </div>
+                                                    
+                                                    <!-- Label to show the DTI ratio -->
+                                                    <div class="slds-text-heading_large slds-text-align_center">
+                                                        <span>{LenderPlan.DebtToIncomeRatio}%</span>
+                                                    </div>
+                                                </div>
+                                            </lightning-card>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr key={LenderPlan.Id} data-id={LenderPlan.AssesmentReportRowId} style="display: none;" >
+                                <td colspan="2">
+                                    <lightning-card variant="Narrow" title="Assesment Report" icon-name="utility:collection_alt">
+                                        <div style="text-wrap: wrap;" data-id={LenderPlan.AssesmentReport}>
+                                        </div>
+                                    </lightning-card>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </template>
+
+        <!-- End of Available Lenders-->
+        <!-- Data failed to load -->
+        <template if:true={error}>
+            <div class="slds-text-color_error">
+                An error occurred while loading the bear list
+            </div>
+        </template>
+        <h1 style="text-align: right; color:#A3A3A3; font-size:12px; margin: 15px 30px 10px;"><i>AI Powered by <img
+                    class="lendingLogikLogo" src={lendingLogikLogo} alt="LendingLogik">
+                <div class="info"></div>
+            </i></h1>
+
+        <lightning-spinner alternative-text="Loading" size="small" if:true={isLoading}></lightning-spinner>
+    </lightning-card>
+
+</template>

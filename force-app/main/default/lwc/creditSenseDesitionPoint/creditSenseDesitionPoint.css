@@ -1,0 +1,72 @@
+:host {
+    --sds-c-card-color-background: #F4F4F4;
+}
+
+.info {
+    position: relative;
+    display: inline-block;
+    height: 20px;
+    width: 20px;
+    margin-top: -60px;
+    margin-left: -20px;
+}
+
+.infoIcon {
+    position: absolute; 
+    margin-top:-85px; 
+    margin-left: 70px
+}
+
+
+.infotext {
+    visibility: hidden;
+}
+  
+.info .infotext {
+width: 120px;
+background-color: rgb(65, 65, 65);
+color: #fff;
+text-align: center;
+border-radius: 6px;
+padding: 5px 0;
+
+/* Position the tooltip */
+position: absolute;
+margin-top: 40px;
+margin-left: -40px;
+z-index: 1;
+}
+
+.info:hover .infotext {
+visibility: visible;
+}
+
+.signal {
+    width: 70px;
+    height: 70px;
+    margin: 10px;
+}
+
+.flynx-txt{
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+.error-clr {
+    color: red;
+    font-weight: 700;
+}
+
+.warning-clr {
+    color: orange;
+    font-weight: 700;
+}
+
+.success-clr {
+    color: green;
+    font-weight: 700;
+}
+.lendingLogikLogo{
+    width: 80px;
+}

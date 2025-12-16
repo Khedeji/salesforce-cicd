@@ -1,0 +1,66 @@
+<template>
+    <div class="chatbot-fab" onclick={toggleChat}>
+        <span class="chatbot-icon">💬</span>
+    </div>
+    <template if:true={isOpen}>
+        <div class="chatbot-window-tw">
+            <div class="chatbot-header-tw">
+                <span>Partner AI Assistant</span>
+                <button class="close-btn-tw" onclick={toggleChat}>×</button>
+            </div>
+            <div class="chatbot-messages-tw" id="messages" data-id="messages"> 
+                <template for:each={messages} for:item="msg">
+                    <!-- <div key={msg.id} class="tw-msg-row {msg.sender}">
+                        <div class="tw-msg-bubble {msg.sender}">
+                            <div class="tw-msg-content">
+                                <template if:true={msg.isBot}>
+                                    <span class="tw-avatar bot">🤖</span>
+                                </template>
+                                <span class="tw-msg-text">{msg.text}</span>
+                                <template if:true={msg.isUser}>
+                                    <span class="tw-avatar user">🧑</span>
+                                </template>
+                            </div>
+                            <div class="tw-msg-meta">
+                                <span class="tw-msg-time">{msg.time}</span>
+                            </div>
+                        </div>
+                    </div> -->
+                    <template if:true={msg.isUser}>
+                        <div key={msg.id} class="tw-msg-row user">
+                            <div class="tw-msg-bubble user">
+                                <div class="tw-msg-content">
+
+                                    <span class="tw-msg-text">{msg.text}</span>
+                                    <span class="tw-avatar user">🧑</span>
+                                </div>
+                                <div class="tw-msg-meta">
+                                    <span class="tw-msg-time">{msg.time}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+
+                    <template if:true={msg.isBot}>
+                        <div key={msg.id} class="tw-msg-row bot">
+                            <div class="tw-msg-bubble bot">
+                                <div class="tw-msg-content">
+                                    <span class="tw-avatar bot">🤖</span>
+                                    <span class="tw-msg-text" lwc:dom="manual" data-id={msg.id}></span>
+                                </div>
+                                <div class="tw-msg-meta">
+                                    <span class="tw-msg-time">{msg.time}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </template>
+            </div>
+            <div class="chatbot-input-tw">
+                <input type="text" placeholder="Ask me anything..." value={userInput} oninput={handleInput}
+                    onkeydown={handleKeyDown} class="tw-input" />
+                <button onclick={sendMessage} class="tw-send-btn">Send</button>
+            </div>
+        </div>
+    </template>
+</template>

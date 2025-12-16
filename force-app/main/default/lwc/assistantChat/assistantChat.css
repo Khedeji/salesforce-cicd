@@ -1,0 +1,180 @@
+/* FAB */
+.chatbot-fab {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    width: 56px;
+    height: 56px;
+    background: #6366f1;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    cursor: pointer;
+    z-index: 1000;
+    font-size: 2rem;
+    transition: background 0.2s;
+}
+.chatbot-fab:hover {
+    background: #4f46e5;
+}
+
+/* Chat Window */
+.chatbot-window-tw {
+    position: fixed;
+    bottom: 100px;
+    right: 32px;
+    width: 25%;
+    height: 70%;
+    max-width: 95vw;
+    max-height: 600px;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+    display: flex;
+    flex-direction: column;
+    z-index: 1001;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+}
+
+.chatbot-header-tw {
+    background: linear-gradient(90deg, #6366f1 60%, #818cf8 100%);
+    color: #fff;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    font-size: 1.1rem;
+    letter-spacing: 0.01em;
+}
+.close-btn-tw {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.7rem;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.close-btn-tw:hover {
+    color: #dbeafe;
+}
+
+.chatbot-messages-tw {
+    flex: 1;
+    padding: 20px 16px 12px 16px;
+    overflow-y: auto;
+    background: #f3f4f6;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.tw-msg-row {
+    width: 100%;
+    display: flex;
+    margin-bottom: 0.5rem;
+}
+.tw-msg-row.user {
+    justify-content: flex-end;
+}
+.tw-msg-row.ai {
+    justify-content: flex-start;
+}
+
+.tw-msg-bubble {
+    display: flex;
+    flex-direction: column;
+    max-width: 80vw;
+    min-width: 60px;
+    max-width: 320px;
+    padding: 0.5rem 1rem;
+    border-radius: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    font-size: 1rem;
+    word-break: break-word;
+    position: relative;
+    background: #fff;
+    margin-bottom: 2px;
+    transition: background 0.2s;
+}
+.tw-msg-bubble.user {
+    background: #6366f1;
+    color: #fff;
+    border-bottom-right-radius: 0.5rem;
+    margin-left: auto;
+}
+.tw-msg-bubble.ai {
+    background: #e0e7ff;
+    color: #222;
+    border-bottom-left-radius: 0.5rem;
+    margin-right: auto;
+}
+
+.tw-msg-content {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.5rem;
+}
+.tw-avatar {
+    font-size: 1.2rem;
+    margin-top: 2px;
+    margin-bottom: auto;
+}
+.tw-avatar.user {
+    margin-left: 0.3rem;
+}
+.tw-avatar.bot {
+    margin-right: 0.3rem;
+}
+.tw-msg-text {
+    flex: 1;
+    line-height: 1.5;
+    font-size: 1rem;
+}
+.tw-msg-meta {
+    text-align: right;
+    font-size: 0.75rem;
+    color: #a1a1aa;
+    margin-top: 2px;
+}
+
+.chatbot-input-tw {
+    display: flex;
+    border-top: 1px solid #e5e7eb;
+    padding: 12px 14px;
+    background: #fff;
+    gap: 0.5rem;
+}
+.tw-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 10px 14px;
+    border-radius: 1rem;
+    font-size: 1rem;
+    background: #f1f5f9;
+    margin-right: 8px;
+    color: #222;
+    transition: box-shadow 0.2s;
+}
+.tw-input:focus {
+    box-shadow: 0 0 0 2px #6366f1;
+}
+.tw-send-btn {
+    background: #6366f1;
+    color: #fff;
+    border: none;
+    border-radius: 1rem;
+    padding: 10px 18px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+.tw-send-btn:hover {
+    background: #4f46e5;
+}

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Lender_Plans__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>The Plans of the Lenders</description>
+    <label>Lender Plans</label>
+    <referenceTo>Lenders__c</referenceTo>
+    <relationshipLabel>Plans</relationshipLabel>
+    <relationshipName>Plans</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

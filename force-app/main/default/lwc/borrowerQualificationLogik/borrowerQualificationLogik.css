@@ -1,0 +1,201 @@
+:host {
+    --sds-c-card-color-background: #F4F4F4;
+}
+
+ 
+.lendingLogikLogo{
+    width: 80px;
+}
+
+/* ======================================================================================================  */
+/* Table container */
+.slds-table {
+    background-color: #fff;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Table Header */
+.slds-table thead th {
+    background-color: #f4f6f9;
+    color: #333;
+    font-weight: bold;
+    padding: 12px;
+    border-bottom: 2px solid #ddd;
+}
+
+/* Table Body */
+.slds-table tbody tr td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Slider container */
+.slds-m-top_medium {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+/* Lightning Card Customization */
+.bear-tile {
+    border-radius: 10px;
+    padding: 16px;
+    background-color: #f7fafc;
+}
+
+/* Table Row Hover Effect */
+.slds-table tbody tr:hover {
+    background-color: #f4f6f9;
+    transition: background-color 0.3s ease;
+}
+
+/* Center text and add spacing for sliders */
+.slds-slider {
+    margin-left: 10px;
+    margin-right: 10px;
+    width: 90%;
+}
+
+/* Slider value styling */
+.slds-slider .slds-slider__value {
+    font-weight: bold;
+    color: #0070d2;
+}
+
+/* Add spacing to the Eligible Lender and Eligible Plan labels */
+.slds-truncate {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+/* Padding and margin adjustment for responsive look */
+.slds-var-m-around_medium {
+    margin: 20px auto;
+    padding: 10px;
+    width: 90%;
+    max-width: 1200px;
+}
+
+/* Align sliders side by side with padding */
+.lightning-layout-item {
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+/* General improvement for better UI look */
+.slds-m-around_medium {
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+
+/* Container for the scrollable table */
+.scrollable-table-container {
+    max-height: 600px; /* Adjust this value based on how much of the table you want visible */
+    overflow-y: auto;  /* Enables vertical scrolling */
+    display: block;
+}
+
+/* Pin the header to the top */
+.scrollable-table-container thead th {
+    position: sticky;  /* This makes the header sticky */
+    top: 0;            /* This ensures it stays at the top */
+    z-index: 2;        /* Ensures the header stays above the table body when scrolling */
+    background-color: #f4f6f9; /* Same as header background to blend smoothly */
+    padding: 12px;
+    font-weight: bold;
+    width: 50%;
+}
+
+/* Table styling */
+.scrollable-table-container table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* Table rows styling */
+.scrollable-table-container tbody tr td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Table header row styling */
+.scrollable-table-container thead {
+    background-color: #f4f6f9;
+}
+
+/* Adjust the width of table cells */
+.scrollable-table-container th, .scrollable-table-container td {
+    padding: 12px;
+    text-align: left;
+    white-space: nowrap; /* Prevent text wrapping */
+}
+
+/* For better UX - add hover effect to table rows */
+.scrollable-table-container tbody tr:hover {
+    background-color: #f1f3f4;
+}
+
+ 
+
+/* credit score Container  */
+.slds-align_absolute-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+}
+
+/* Linear Guage  */
+.gauge-container {
+    position: relative;
+    width: 100%;
+    height: 20px;
+    display: flex;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.gauge-bar {
+    height: 100%;
+}
+
+.yellow-zone {
+    background-color: #FDB75D;
+    width: 33.3%;
+}
+
+.green-zone {
+    background-color: #24716B;
+    width: 33.3%;
+}
+
+.yellow-zone {
+    background-color: #FDB75D;
+    width: 33.3%;
+}
+
+.gauge-pointer {
+    position: absolute;
+    top: 0.5px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid #000;
+    transform: translateX(-50%);
+}
+
+.gauge-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+    padding: 0 4px;
+}
+
+.label {
+    font-size: 12px;
+    color: #818181;
+}

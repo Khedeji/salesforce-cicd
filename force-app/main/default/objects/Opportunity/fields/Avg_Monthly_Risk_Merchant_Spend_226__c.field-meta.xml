@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Avg_Monthly_Risk_Merchant_Spend_226__c</fullName>
+    <description>Avg Monthly Risk Merchant Spend (226)</description>
+    <externalId>false</externalId>
+    <label>Avg Monthly Risk Merchant Spend (226)</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>0</scale>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

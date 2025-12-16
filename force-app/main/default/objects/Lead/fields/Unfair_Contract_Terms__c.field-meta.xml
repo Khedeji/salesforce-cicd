@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Unfair_Contract_Terms__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>the contract term allows the lender to unilaterally change interest rates without notice, Do you agree with it ?</description>
+    <label>Unfair Contract Terms</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <type>Checkbox</type>
+</CustomField>
