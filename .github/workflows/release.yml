@@ -55,7 +55,8 @@ jobs:
             --path force-app \
             --installation-key-bypass \
             --wait 20 \
-            --json > pkg.json
+            --verbose \
+            --json | tee pkg.json
 
           echo "===== PACKAGE CREATE OUTPUT ====="
           cat pkg.json
