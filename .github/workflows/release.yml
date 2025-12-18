@@ -137,13 +137,7 @@ jobs:
         run: |
           sf org display --target-org sandbox
 
-      - name: Validate deployment (NO TEST RUN)
-        run: |
-          sf project deploy validate \
-            --source-dir force-app \
-            --target-org sandbox \
-            --test-level NoTestRun \
-            --wait 20
+      # ❌ NO VALIDATE STEP (by design)
 
       - name: Deploy source to Sandbox (NO TEST RUN)
         run: |
