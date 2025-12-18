@@ -137,12 +137,11 @@ jobs:
         run: |
           sf org display --target-org sandbox
 
-      # ❌ NO VALIDATE STEP (by design)
-
-      - name: Deploy source to Sandbox (NO TEST RUN)
+      - name: Deploy source to Sandbox (overwrite org)
         run: |
           sf project deploy start \
             --source-dir force-app \
             --target-org sandbox \
             --test-level NoTestRun \
+            --ignore-conflicts \
             --wait 20
