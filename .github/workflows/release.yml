@@ -117,7 +117,6 @@ on:
 
 jobs:
   deploy-sandbox:
-    name: Deploy Metadata to Sandbox
     runs-on: ubuntu-latest
 
     steps:
@@ -129,11 +128,18 @@ jobs:
         with:
           sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_SANDBOX }}
 
+      - name: Set sandbox alias explicitly
+        run: |
+          sf org list
+          SANDBOX_USERNAME=$(sf org list --json | jq -r '.result.nonScratchOrgs[0].username')
+          echo "Detected username: $SANDBOX_USERNAME"
+          sf org alias set sandbox=$SANDBOX_USERNAME
+
       - name: Verify org connection
         run: |
           sf org display --target-org sandbox
 
-      - name: Validate deployment (no changes applied)
+      - name: Validate deployment (check-only)
         run: |
           sf project deploy validate \
             --source-dir force-app \
