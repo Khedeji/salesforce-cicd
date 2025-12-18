@@ -12,8 +12,9 @@
   "name": "salesforce-cicd",
   "namespace": "",
   "sfdcLoginUrl": "https://login.salesforce.com",
-  "sourceApiVersion": "62.0",
+  "sourceApiVersion": "65.0",
   "packageAliases": {
-    "MyApp": "0Hod20000000VAHCA2"
+    "MyApp": "0Hod20000000VAHCA2",
+    "MyApp@0.1.0-1": "04td2000000Dn4XAAS"
   }
 }
