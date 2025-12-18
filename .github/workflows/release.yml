@@ -128,12 +128,12 @@ jobs:
         with:
           sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_SANDBOX }}
 
-      - name: Set sandbox alias explicitly
+      - name: Set sandbox alias explicitly (FIXED)
         run: |
           sf org list
           SANDBOX_USERNAME=$(sf org list --json | jq -r '.result.nonScratchOrgs[0].username')
           echo "Detected username: $SANDBOX_USERNAME"
-          sf org alias set sandbox=$SANDBOX_USERNAME
+          sf alias set sandbox=$SANDBOX_USERNAME
 
       - name: Verify org connection
         run: |
