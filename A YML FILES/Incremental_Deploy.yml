@@ -1,0 +1,57 @@
+name: Deploy DELTA source to Sandbox
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  delta-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout full git history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # REQUIRED for git diff
+
+      - name: Authenticate Sandbox
+        uses: sfdx-actions/setup-sfdx@v1
+        with:
+          sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_SANDBOX }}
+
+      - name: Set sandbox alias
+        run: |
+          SANDBOX_USERNAME=$(sf org list --json | jq -r '.result.nonScratchOrgs[0].username')
+          sf alias set sandbox=$SANDBOX_USERNAME
+
+      - name: Install sfdx-git-delta
+        run: |
+          npm install -g sfdx-git-delta
+
+      - name: Generate delta
+        run: |
+          mkdir delta
+          sfdx sgd:source:delta \
+            --to HEAD \
+            --from HEAD~1 \
+            --output delta \
+            --source force-app
+
+      - name: Show delta content (debug)
+        run: |
+          echo "Delta files:"
+          find delta
+
+      - name: Deploy delta to Sandbox
+        run: |
+          if [ -d "delta/force-app" ]; then
+            sf project deploy start \
+              --source-dir delta/force-app \
+              --target-org sandbox \
+              --test-level NoTestRun \
+              --ignore-conflicts \
+              --wait 20
+          else
+            echo "No changes detected. Skipping deploy."
+          fi
