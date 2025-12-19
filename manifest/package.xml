@@ -312,6 +312,9 @@
 		<members>Credit_Decision_Page</members>
 		<members>Cross_Selling_of_Loans</members>
 		<members>Cross_Selling_of_Loans_Approach_2</members>
+		<members>Home_Page_Default10</members>
+		<members>Home_Page_Default6</members>
+		<members>Lender_Record_Page</members>
 		<members>Loan_Cross_selling_UtilityBar</members>
 		<members>Logik_Lead_Record_Page</members>
 		<members>Logik_Lead_Record_Page1</members>
@@ -336,17 +339,16 @@
 		<name>LightningComponentBundle</name>
 	</types>
 	<types>
-		<members>AllPermissionforAdmin</members>
-		<members>LendingLogikPS</members>
-		<name>PermissionSet</name>
-	</types>
-	<types>
 		<members>ApexDevNet</members>
 		<members>Borrower_Qualification_API</members>
 		<members>Compliance_Logik_Site</members>
 		<members>credit_decision_flask_APi</members>
 		<members>tabeau_public_site</members>
 		<name>RemoteSiteSetting</name>
+	</types>
+	<types>
+		<members>Opportunity.DeliveryStatus</members>
+		<name>WebLink</name>
 	</types>
 	<version>65.0</version>
 </Package>

@@ -170,11 +170,11 @@
         <field>Lead.Ballon_Amount__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <fieldPermissions>
+    <!-- <fieldPermissions>
         <editable>true</editable>
         <field>Lead.CompanyDunsNumber</field>
         <readable>true</readable>
-    </fieldPermissions>
+    </fieldPermissions> -->
     <fieldPermissions>
         <editable>true</editable>
         <field>Lead.Credit_Score__c</field>
