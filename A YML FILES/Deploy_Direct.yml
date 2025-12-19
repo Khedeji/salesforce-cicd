@@ -1,0 +1,37 @@
+name: Deploy source to Sandbox (Source-based CI/CD)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy-sandbox:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Authenticate Sandbox
+        uses: sfdx-actions/setup-sfdx@v1
+        with:
+          sfdx-auth-url: ${{ secrets.SFDX_AUTH_URL_SANDBOX }}
+
+      - name: Set sandbox alias
+        run: |
+          SANDBOX_USERNAME=$(sf org list --json | jq -r '.result.nonScratchOrgs[0].username')
+          sf alias set sandbox=$SANDBOX_USERNAME
+
+      - name: Verify org connection
+        run: |
+          sf org display --target-org sandbox
+
+      - name: Deploy source to Sandbox (overwrite org)
+        run: |
+          sf project deploy start \
+            --source-dir force-app \
+            --target-org sandbox \
+            --test-level NoTestRun \
+            --ignore-conflicts \
+            --wait 20

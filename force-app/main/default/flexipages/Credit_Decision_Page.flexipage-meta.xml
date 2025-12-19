@@ -102,12 +102,12 @@
         <type>Region</type>
     </flexiPageRegions>
     <flexiPageRegions>
-        <!-- <itemInstances>
+        <itemInstances>
             <componentInstance>
                 <componentName>cooper:companyInsightTeaserCard</componentName>
                 <identifier>cooper_companyInsightTeaserCard</identifier>
             </componentInstance>
-        </itemInstances> -->
+        </itemInstances>
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>

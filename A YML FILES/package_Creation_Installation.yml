@@ -1,0 +1,109 @@
+name: CI/CD - DevHub → Sandbox (Package)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  PACKAGE_ALIAS: MyApp # must exist in sfdx-project.json
+
+jobs:
+  # --------------------------------------------------
+  # 1️⃣ CREATE PACKAGE VERSION IN DEVHUB
+  # --------------------------------------------------
+  build-package:
+    name: Create Package Version (DevHub)
+    runs-on: ubuntu-latest
+    outputs:
+      pkg_version: ${{ steps.create_pkg.outputs.pkg_version }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Salesforce CLI
+        run: |
+          npm install --global @salesforce/cli
+          export PATH="$(npm bin -g):$PATH"
+          sf --version
+
+      - name: Authenticate DevHub
+        run: |
+          echo "${{ secrets.SFDX_AUTH_URL_DEVHUB }}" > devhub.sfdx
+          sf org login sfdx-url \
+            --sfdx-url-file devhub.sfdx \
+            --alias devhub \
+            --set-default-dev-hub
+          sf org list
+
+      - name: Create Package Version in DevHub (DEBUG)
+        id: create_pkg
+        run: |
+          set -e
+
+          echo "Checking DevHub status"
+          sf org display --target-org devhub
+
+          echo "Listing packages in DevHub"
+          sf package list --target-dev-hub devhub
+
+          echo "Creating package version for ${PACKAGE_ALIAS}"
+
+          sf package version create \
+            --package "$PACKAGE_ALIAS" \
+            --path force-app \
+            --installation-key-bypass \
+            --wait 20 \
+            --verbose \
+            --json | tee pkg.json
+
+          echo "===== PACKAGE CREATE OUTPUT ====="
+          cat pkg.json
+          echo "================================"
+
+          PKG_ID=$(jq -r '.result.SubscriberPackageVersionId' pkg.json)
+
+          if [ -z "$PKG_ID" ] || [ "$PKG_ID" = "null" ]; then
+            echo "ERROR: Package version creation failed"
+            exit 1
+          fi
+
+          echo "pkg_version=$PKG_ID" >> $GITHUB_OUTPUT
+
+  # --------------------------------------------------
+  # 2️⃣ INSTALL PACKAGE INTO SANDBOX
+  # --------------------------------------------------
+  deploy-sandbox:
+    name: Install Package into Sandbox
+    runs-on: ubuntu-latest
+    needs: build-package
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Salesforce CLI
+        run: |
+          npm install --global @salesforce/cli
+          export PATH="$(npm bin -g):$PATH"
+          sf --version
+
+      - name: Authenticate Sandbox
+        run: |
+          echo "${{ secrets.SFDX_AUTH_URL_SANDBOX }}" > sandbox.sfdx
+          sf org login sfdx-url \
+            --sfdx-url-file sandbox.sfdx \
+            --alias sandbox \
+            --set-default
+          sf org list
+
+      - name: Install Package into Sandbox
+        run: |
+          echo "Installing package version: ${{ needs.build-package.outputs.pkg_version }} into Sandbox"
+
+          sf package install \
+            --package "${{ needs.build-package.outputs.pkg_version }}" \
+            --target-org sandbox \
+            --no-prompt \
+            --wait 20
